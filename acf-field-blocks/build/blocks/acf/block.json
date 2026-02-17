@@ -1,0 +1,34 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "acf-field-blocks/acf",
+	"title": "ACF Field",
+	"description": "Display an ACF field",
+	"category": "acf-field-blocks",
+	"textdomain": "acf-field-blocks",
+	"usesContext": [
+		"postId",
+		"postType",
+		"queryId",
+		"termId",
+		"taxonomy",
+		"acf-field-blocks/repeaters",
+		"acf-field-blocks/taxonomy",
+		"acf-field-blocks/term",
+		"acf-field-blocks/user"
+	],
+	"attributes": {
+		"fieldKey": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldSource": {
+			"type": "string",
+			"default": ""
+		}
+	},
+	"supports": {
+		"interactivity": true,
+		"html": false
+	}
+}
