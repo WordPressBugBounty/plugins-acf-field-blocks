@@ -3,7 +3,7 @@ Contributors: gamaup
 Tags: acf, block, meta field, meta field block, acf block
 Requires at least: 6.5
 Tested up to: 6.9
-Stable Tag: 1.3.2
+Stable Tag: 1.4.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -147,6 +147,18 @@ Yes, of course.
 3. Field Settings
 
 == Changelog ==
+
+= 1.4.0 =
+*Feb 19th, 2026*
+
+* **NEW:** Display oEmbed and URL fields as embed
+* [PRO Only] **NEW:** Display Repeater fields as accordions
+* [PRO Only] **NEW:** Display Repeater fields as tabs
+
+= 1.3.3 =
+*Feb 6th, 2026*
+
+* [PRO Only] **FIX:** Add reset post data after loads field as posts loop
 
 = 1.3.2 =
 *Feb 3rd, 2026*

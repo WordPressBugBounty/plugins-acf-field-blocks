@@ -6,7 +6,7 @@
  * Requires at least: 6.5
  * Tested up to:      6.9
  * Requires PHP:      7.4
- * Version:           1.3.2
+ * Version:           1.4.0
  * Author:            gamaup
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -74,7 +74,7 @@ if ( ! class_exists( 'ACF_Field_Blocks' ) ) {
 		 * Define all constants
 		 */
 		public function define_constants() {
-			define( 'ACF_FIELD_BLOCKS_VERSION', '1.3.2' );
+			define( 'ACF_FIELD_BLOCKS_VERSION', '1.4.0' );
 			define( 'ACF_FIELD_BLOCKS_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 			define( 'ACF_FIELD_BLOCKS_URL', plugins_url( basename( plugin_dir_path( __FILE__ ) ), basename( __FILE__ ) ) );
 		}

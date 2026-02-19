@@ -348,7 +348,8 @@ class Blocks {
 		$dynamic_blocks = array(
 			'acf-text'  => '\ACFFieldBlocks\Blocks\ACF_Text',
 			'acf-image' => '\ACFFieldBlocks\Blocks\ACF_Image',
-			'acf-button' => '\ACFFieldBlocks\Blocks\ACF_Button'
+			'acf-button' => '\ACFFieldBlocks\Blocks\ACF_Button',
+			'acf-embed' => '\ACFFieldBlocks\Blocks\ACF_Embed'
 		);
 
 		$dynamic_blocks = apply_filters( 'acf_field_blocks_register_dynamic_blocks', $dynamic_blocks );
@@ -357,7 +358,8 @@ class Blocks {
 			"acf",
 			"acf-text",
 			"acf-image",
-			"acf-button"
+			"acf-button",
+			"acf-embed"
 		);
 
 		self::$blocks = apply_filters( 'acf_field_blocks_register_blocks', self::$blocks );
