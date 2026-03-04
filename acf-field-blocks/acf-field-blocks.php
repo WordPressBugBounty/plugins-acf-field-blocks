@@ -6,7 +6,7 @@
  * Requires at least: 6.5
  * Tested up to:      6.9
  * Requires PHP:      7.4
- * Version:           1.4.0
+ * Version:           1.4.2
  * Author:            gamaup
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -55,26 +55,28 @@ if ( ! class_exists( 'ACF_Field_Blocks' ) ) {
 				return;
 			}
 
-			if ( ! class_exists( 'ACF' ) || ! version_compare( acf()->version, '6.1.0', '>=' )  ) {
-				add_action( 'admin_notices', [ $this, 'fail_acf_required' ] );
-				return;
-			}
+			add_action( 'after_setup_theme', function() {
+				if ( ! class_exists( 'ACF' ) || ! version_compare( acf()->version, '6.1.0', '>=' )  ) {
+					add_action( 'admin_notices', [ $this, 'fail_acf_required' ] );
+					return;
+				}
 
-			add_filter( 'network_admin_plugin_action_links_acf-field-blocks/acf-field-blocks.php', array( $this, 'filter_plugin_action_links' ) );
-			add_filter( 'plugin_action_links_acf-field-blocks/acf-field-blocks.php', array( $this, 'filter_plugin_action_links' ) );
-			add_action( 'activated_plugin', array( $this, 'deactivate_other_instances' ) );
-			add_action( 'pre_current_active_plugins', array( $this, 'plugin_deactivated_notice' ) );
-			add_action( 'admin_init', array( $this, 'handle_admin_actions' ) );
+				add_filter( 'network_admin_plugin_action_links_acf-field-blocks/acf-field-blocks.php', array( $this, 'filter_plugin_action_links' ) );
+				add_filter( 'plugin_action_links_acf-field-blocks/acf-field-blocks.php', array( $this, 'filter_plugin_action_links' ) );
+				add_action( 'activated_plugin', array( $this, 'deactivate_other_instances' ) );
+				add_action( 'pre_current_active_plugins', array( $this, 'plugin_deactivated_notice' ) );
+				add_action( 'admin_init', array( $this, 'handle_admin_actions' ) );
 
-			$this->define_constants();
-			$this->autoload();
+				$this->define_constants();
+				$this->autoload();
+			});
 		}
 
 		/**
 		 * Define all constants
 		 */
 		public function define_constants() {
-			define( 'ACF_FIELD_BLOCKS_VERSION', '1.4.0' );
+			define( 'ACF_FIELD_BLOCKS_VERSION', '1.4.2' );
 			define( 'ACF_FIELD_BLOCKS_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 			define( 'ACF_FIELD_BLOCKS_URL', plugins_url( basename( plugin_dir_path( __FILE__ ) ), basename( __FILE__ ) ) );
 		}

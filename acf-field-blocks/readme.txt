@@ -3,7 +3,7 @@ Contributors: gamaup
 Tags: acf, block, meta field, meta field block, acf block
 Requires at least: 6.5
 Tested up to: 6.9
-Stable Tag: 1.4.0
+Stable Tag: 1.4.2
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -25,7 +25,7 @@ Want to see it in action? Watch the short demo video below to learn how it works
 * **One Block for All Fields** – Load almost any field type using just a single, versatile block.
 * **Smart Field Picker** – No need to type field names. Choose from a dropdown that automatically shows only the ACF & SCF fields available for the post, page, or template you're editing.
 * **Flexible Output Control** – Style and format your field values directly in the editor, with output that always works correctly regardless of the field's return setting. 
-* **Supports Most ACF/SCF Field Types** – Including text, image, post object, terms, users, and more.
+* **Supports Most ACF/SCF Field Types** – Including Text, Image, Post Object, Taxonomy, User, and more.
 * **Supports All Field Locations** – Works with post fields, options pages, term fields, and user fields.
 * **Full Site Editing Ready** – Fully compatible with the WordPress Site Editor for building custom templates and theme parts.
 * **Dynamic Layouts Ready** – Seamlessly works inside Query Loops and reusable patterns for dynamic layouts.
@@ -43,10 +43,11 @@ With this flexibility, the plugin supports most commonly used field types right 
 * Password
 * Image
 * File
-* WYSIWYG
+* WYSIWYG Editor
+* oEmbed
 * Select
 * Checkbox
-* Radio
+* Radio Button
 * Button Group
 * True/False
 * Link
@@ -55,10 +56,10 @@ With this flexibility, the plugin supports most commonly used field types right 
 * Relationship
 * Taxonomy
 * User
-* Date
-* Date Time
-* Time
-* Color
+* Date Picker
+* Date Time Picker
+* Time Picker
+* Color Picker
 
 In addition to the wide variety of field types, you also have control over where your fields are sourced from. This makes it easy to connect content dynamically based on the template you're editing.
 
@@ -76,16 +77,16 @@ Upgrade to the PRO version to extend your layouts even further with advanced fie
 
 **Additional supported field types in PRO:**
 
-* **Repeater** – Easily transform your repeater fields into repeatable content sections inside the block editor. Each sub field can be accessed and styled individually, giving you full flexibility to match your layout needs. You can display them as lists, grids, or carousels, with accordion layouts coming soon.
-* **Gallery** – Display your gallery fields in multiple ways: as a grid, masonry, or interactive carousel. Fine-tune responsive layouts with options for different screen sizes, and choose whether images open in a lightbox or link to the full-size version for an engaging user experience.
+* **Repeater** – Easily transform your repeater fields into repeatable content sections inside the block editor. Each sub field can be accessed and styled individually, giving you full flexibility to match your layout needs. Display them as lists, grids, carousels, accordions, or tabs.
+* **Gallery** – Display your gallery fields as an image grid, masonry layout, or interactive carousel. Fine-tune responsive layouts with options for different screen sizes, and choose whether images open in a lightbox or link to the full-size version for an engaging user experience.
 * **Group** – Easily access and display sub fields inside group fields, no matter how deeply nested.
 * **Flexible Content (coming soon)** – Take full advantage of flexible content fields by visually rendering layouts in the block editor. Each layout and its sub fields can be styled individually, making it easier than ever to build custom, dynamic page structures without touching code.
 
 The PRO version doesn't just add support for new field types, it also unlocks **powerful new display options** for fields already supported in the free plugin. These options let you loop through related content and build dynamic layouts directly in the block editor.
 
-* **Post Object & Relationship** – Display these fields as dynamic post loops, similar to the Query Loop block, with the added ability to load custom fields within each post. Choose from list, grid, or carousel layouts, making it perfect for creating related posts sections or featured post displays.
-* **Taxonomy** – Render taxonomy fields as term loops, with the ability to access and display custom fields attached to each term. Output them in list, grid, or carousel layouts for flexible category, tag, or custom taxonomy displays.
-* **User** – Display user fields as user loops, complete with ability to show custom fields attached to each user. Layouts can be formatted as list, grid, or carousel. Ideal for building user directories, contributor listings, or team layouts.
+* **Post Object & Relationship** – Display these fields as dynamic post loops (List, Grid, or Carousel), similar to the Query Loop block, with the added ability to load custom fields within each post. Also supports Single Post display. Perfect for creating related posts sections or featured post displays.
+* **Taxonomy** – Render taxonomy fields as term loops (List, Grid, or Carousel), with the ability to access and display custom fields attached to each term. Also supports Single Term display. Ideal for flexible category, tag, or custom taxonomy layouts.
+* **User** – Display user fields as user loops (List, Grid, or Carousel), complete with ability to show custom fields attached to each user. Also supports Single User display. Great for building user directories, contributor listings, or team layouts.
 
 **Block Visibility by ACF**
 
@@ -147,6 +148,17 @@ Yes, of course.
 3. Field Settings
 
 == Changelog ==
+
+= 1.4.2 =
+*Mar 4th, 2026*
+
+* **FIX:** Fixed ACF version check timing by moving initialization to `after_setup_theme` hook
+* [PRO Only] **FIX:** Fixed REST API validation errors when using block visibility controls on server-side rendered blocks by stripping visibility attributes from block render requests
+
+= 1.4.1 =
+*Feb 20th, 2026*
+
+* [PRO Only] **FIX:** Grid style broken on frontend side
 
 = 1.4.0 =
 *Feb 19th, 2026*
