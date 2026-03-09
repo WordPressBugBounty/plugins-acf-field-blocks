@@ -78,7 +78,7 @@ class ACF_Text {
 
 			case 'wysiwyg':
 				$tag   = 'div';
-				$value = wp_kses_post( nl2br( $field['value'] ) );
+				$value = apply_filters( 'acf_the_content', $field['value'] );
 				break;
 				
 			case 'link':

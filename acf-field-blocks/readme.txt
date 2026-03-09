@@ -3,7 +3,7 @@ Contributors: gamaup
 Tags: acf, block, meta field, meta field block, acf block
 Requires at least: 6.5
 Tested up to: 6.9
-Stable Tag: 1.4.2
+Stable Tag: 1.4.3
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -148,6 +148,12 @@ Yes, of course.
 3. Field Settings
 
 == Changelog ==
+
+= 1.4.3 =
+*Mar 9th, 2026*
+
+* **FIX:** Fixed PHP 8+ error when `get_the_content()` is called without a valid post object
+* **FIX:** Fixed WYSIWYG field output to properly apply ACF content filters instead of using `nl2br()`
 
 = 1.4.2 =
 *Mar 4th, 2026*
