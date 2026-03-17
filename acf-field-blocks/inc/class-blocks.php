@@ -266,7 +266,13 @@ class Blocks {
 			$content .= $_wp_current_template_content;
 			$post     = $content;
 		} else {
-			$content = get_the_content( null, false, $post );
+			$_post = empty( $post ) ? get_post() : $post;
+
+			if ( empty( $_post ) ) {
+				return;
+			}
+
+			$content = get_the_content( null, false, $_post );
 		}
 
 		$this->enqueue_block_styles( $post );
