@@ -52,7 +52,7 @@ class ACF_Text {
 		$closing_tag = "</{$tag}>";
 
 		// throw if value is empty.
-		if ( ( '' === $field['value'] || is_null( $field['value'] ) || ( is_array( $field['value'] ) && empty( $field['value'] ) ) ) && 'true_false' !== $field['type'] ) {
+		if ( ( '' === $field['value'] || is_null( $field['value'] ) || ( is_array( $field['value'] ) && empty( $field['value'] ) ) || false === $field['value'] ) && 'true_false' !== $field['type'] ) {
 			if ( isset( $attr['showMessageIfEmpty'] ) && boolval( $attr['showMessageIfEmpty'] ) && isset( $attr['emptyMessage'] ) && ! empty( $attr['emptyMessage'] ) ) {
 				return $opening_tag . '<span class="empty">' . $attr['emptyMessage'] . '</span>' . $closing_tag;
 			} else {
@@ -216,7 +216,55 @@ class ACF_Text {
 			case 'time_picker':
 				$value = gmdate( $field['return_format'], strtotime( $field['value'] ) );
 				break;
-			
+
+			case 'google_map':
+				$return_format = $attr['returnFormat'] ?? 'address';
+
+				switch ( $return_format ) {
+					case 'lat_lng':
+						$lat = isset( $field['value']['lat'] ) ? $field['value']['lat'] : '';
+						$lng = isset( $field['value']['lng'] ) ? $field['value']['lng'] : '';
+						$value = $lat . ', ' . $lng;
+						break;
+					case 'lat':
+						$value = isset( $field['value']['lat'] ) ? $field['value']['lat'] : '';
+						break;
+					case 'lng':
+						$value = isset( $field['value']['lng'] ) ? $field['value']['lng'] : '';
+						break;
+					case 'street_number':
+					case 'street_name':
+					case 'street_name_short':
+					case 'city':
+					case 'state':
+					case 'state_short':
+					case 'post_code':
+					case 'country':
+					case 'country_short':
+						$value = isset( $field['value'][ $return_format ] ) ? $field['value'][ $return_format ] : '';
+						break;
+					case 'address':
+					default:
+						$value = isset( $field['value']['address'] ) ? $field['value']['address'] : '';
+						break;
+				}
+
+				// Handle link to Google Maps
+				if ( $is_link && ! empty( $value ) ) {
+					$address  = isset( $field['value']['address'] ) ? $field['value']['address'] : '';
+					$place_id = isset( $field['value']['place_id'] ) ? $field['value']['place_id'] : '';
+					$map_url  = 'https://www.google.com/maps/search/?api=1&query=' . urlencode( $address );
+
+					if ( ! empty( $place_id ) ) {
+						$map_url .= '&query_place_id=' . urlencode( $place_id );
+					}
+
+					$value = $this->create_link( $map_url, $value, $new_tab );
+				} else {
+					$value = esc_html( $value );
+				}
+				break;
+
 			default:
 				$value = is_array( $field['value'] ) ? array_map( 'esc_html', $field['value'] ) : esc_html( $field['value'] );
 				break;

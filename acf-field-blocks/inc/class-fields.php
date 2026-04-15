@@ -128,10 +128,30 @@ class Fields {
 	}
 
 	/**
+	 * Resolve a custom icon URL from ACF Icon Picker custom tab filters.
+	 *
+	 * @param  string $icon_type  The custom tab name (e.g. 'cards').
+	 * @param  string $icon_value The icon key (e.g. 'ace-of-spades').
+	 * @return string             The icon URL, or empty string if not found.
+	 */
+	public static function resolve_custom_icon_url( $icon_type, $icon_value ) {
+		$icons = apply_filters( "acf/fields/icon_picker/{$icon_type}/icons", array() );
+		if ( empty( $icons ) || ! is_array( $icons ) ) {
+			return '';
+		}
+		foreach ( $icons as $icon ) {
+			if ( isset( $icon['key'] ) && $icon['key'] === $icon_value && ! empty( $icon['url'] ) ) {
+				return $icon['url'];
+			}
+		}
+		return '';
+	}
+
+	/**
 	 * Get the formatted value
 	 *
 	 * @since  1.1.2
-	 * 
+	 *
 	 * @param  mixed  $raw_value Raw field value
 	 * @param  array  $field     Field object
 	 * @return mixed             Formatted value of the field.
@@ -209,6 +229,18 @@ class Fields {
 					return $return;
 				}
 			}
+		} elseif ( 'icon_picker' === $field['type'] ) {
+			if ( is_array( $raw_value )
+				&& ! empty( $raw_value['type'] )
+				&& ! empty( $raw_value['value'] )
+				&& ! in_array( $raw_value['type'], array( 'dashicons', 'media_library', 'url' ), true )
+			) {
+				$resolved_url = self::resolve_custom_icon_url( $raw_value['type'], $raw_value['value'] );
+				if ( ! empty( $resolved_url ) ) {
+					$raw_value['url'] = $resolved_url;
+				}
+			}
+			return $raw_value;
 		}
 		return apply_filters( 'acf_field_blocks_get_formatted_value', $raw_value, $field );
 	}

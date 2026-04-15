@@ -4,9 +4,9 @@
  * Plugin URI:        https://www.acffieldblocks.com
  * Description:       The easiest way to display ACF fields in the WordPress block editor — no coding required!
  * Requires at least: 6.5
- * Tested up to:      6.9
+ * Tested up to:      7.0
  * Requires PHP:      7.4
- * Version:           1.4.4
+ * Version:           1.5.0
  * Author:            gamaup
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -76,7 +76,7 @@ if ( ! class_exists( 'ACF_Field_Blocks' ) ) {
 		 * Define all constants
 		 */
 		public function define_constants() {
-			define( 'ACF_FIELD_BLOCKS_VERSION', '1.4.4' );
+			define( 'ACF_FIELD_BLOCKS_VERSION', '1.5.0' );
 			define( 'ACF_FIELD_BLOCKS_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 			define( 'ACF_FIELD_BLOCKS_URL', plugins_url( basename( plugin_dir_path( __FILE__ ) ), basename( __FILE__ ) ) );
 		}

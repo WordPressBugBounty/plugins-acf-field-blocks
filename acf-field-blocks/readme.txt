@@ -2,8 +2,8 @@
 Contributors: gamaup
 Tags: acf, block, meta field, meta field block, acf block
 Requires at least: 6.5
-Tested up to: 6.9
-Stable Tag: 1.4.4
+Tested up to: 7.0
+Stable Tag: 1.5.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -56,6 +56,8 @@ With this flexibility, the plugin supports most commonly used field types right 
 * Relationship
 * Taxonomy
 * User
+* Google Map
+* Icon Picker
 * Date Picker
 * Date Time Picker
 * Time Picker
@@ -80,13 +82,14 @@ Upgrade to the PRO version to extend your layouts even further with advanced fie
 * **Repeater** – Easily transform your repeater fields into repeatable content sections inside the block editor. Each sub field can be accessed and styled individually, giving you full flexibility to match your layout needs. Display them as lists, grids, carousels, accordions, or tabs.
 * **Gallery** – Display your gallery fields as an image grid, masonry layout, or interactive carousel. Fine-tune responsive layouts with options for different screen sizes, and choose whether images open in a lightbox or link to the full-size version for an engaging user experience.
 * **Group** – Easily access and display sub fields inside group fields, no matter how deeply nested.
-* **Flexible Content (coming soon)** – Take full advantage of flexible content fields by visually rendering layouts in the block editor. Each layout and its sub fields can be styled individually, making it easier than ever to build custom, dynamic page structures without touching code.
 
 The PRO version doesn't just add support for new field types, it also unlocks **powerful new display options** for fields already supported in the free plugin. These options let you loop through related content and build dynamic layouts directly in the block editor.
 
 * **Post Object & Relationship** – Display these fields as dynamic post loops (List, Grid, or Carousel), similar to the Query Loop block, with the added ability to load custom fields within each post. Also supports Single Post display. Perfect for creating related posts sections or featured post displays.
 * **Taxonomy** – Render taxonomy fields as term loops (List, Grid, or Carousel), with the ability to access and display custom fields attached to each term. Also supports Single Term display. Ideal for flexible category, tag, or custom taxonomy layouts.
 * **User** – Display user fields as user loops (List, Grid, or Carousel), complete with ability to show custom fields attached to each user. Also supports Single User display. Great for building user directories, contributor listings, or team layouts.
+* **Google Map** – Display ACF Google Maps fields with custom markers and styling. Perfect for location-based content like store locators, event venues, or property listings.
+* **Embed Popup** – Display an ACF oEmbed or URL field inside a lightbox popup. The embed is only loaded on click, keeping your pages fast while providing rich media experiences.
 
 **Block Visibility by ACF**
 
@@ -148,6 +151,15 @@ Yes, of course.
 3. Field Settings
 
 == Changelog ==
+
+= 1.5.0 =
+*Apr 15th, 2026*
+
+* [PRO Only] **NEW:** Embed Popup block — display oEmbed/URL fields in a lightbox popup that loads only on click
+* [PRO Only] **NEW:** Display Google Map fields as interactive maps with custom marker and styling
+* **NEW:** Display Google Map fields as text with multiple return format options (Address, Lat/Lng, State, Country, Post Code, etc.)
+* **NEW:** Display ACF Icon Picker fields as icons with customizable size, color, and alignment
+* **NEW:** Added info tooltip to "Display Field As" dropdown showing descriptions for each display option
 
 = 1.4.4 =
 *Mar 17th, 2026*

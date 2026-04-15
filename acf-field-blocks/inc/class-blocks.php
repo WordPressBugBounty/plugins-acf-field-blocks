@@ -355,7 +355,8 @@ class Blocks {
 			'acf-text'  => '\ACFFieldBlocks\Blocks\ACF_Text',
 			'acf-image' => '\ACFFieldBlocks\Blocks\ACF_Image',
 			'acf-button' => '\ACFFieldBlocks\Blocks\ACF_Button',
-			'acf-embed' => '\ACFFieldBlocks\Blocks\ACF_Embed'
+			'acf-embed' => '\ACFFieldBlocks\Blocks\ACF_Embed',
+			'acf-icon'  => '\ACFFieldBlocks\Blocks\ACF_Icon',
 		);
 
 		$dynamic_blocks = apply_filters( 'acf_field_blocks_register_dynamic_blocks', $dynamic_blocks );
@@ -365,7 +366,8 @@ class Blocks {
 			"acf-text",
 			"acf-image",
 			"acf-button",
-			"acf-embed"
+			"acf-embed",
+			"acf-icon",
 		);
 
 		self::$blocks = apply_filters( 'acf_field_blocks_register_blocks', self::$blocks );
@@ -376,7 +378,9 @@ class Blocks {
 
 		$local_dependencies = array_merge(
 			self::$block_dependencies,
-			array()
+			array(
+				'acf-icon' => array( 'dashicons' ),
+			)
 		);
 
 		foreach ( self::$blocks as $block ) {

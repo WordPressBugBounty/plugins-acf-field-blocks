@@ -1,0 +1,29 @@
+{
+	"acf": {
+		"block": "blocks/acf/block.json"
+	},
+	"acf-text": {
+		"block": "blocks/acf-text/block.json"
+	},
+	"acf-image": {
+		"block": "blocks/acf-image/block.json",
+		"assets": {
+			"acf-image/editor.css": "blocks/acf-image/editor.scss",
+			"acf-image/style.css": "blocks/acf-image/style.scss"
+		}
+	},
+	"acf-button": {
+		"block": "blocks/acf-button/block.json",
+		"assets": {
+			"acf-button/editor.css": "blocks/acf-button/editor.scss",
+			"acf-button/style.css": "blocks/acf-button/style.scss"
+		}
+	},
+	"acf-embed": {
+		"block": "blocks/acf-embed/block.json",
+		"assets": {
+			"acf-embed/editor.css": "blocks/acf-embed/editor.scss",
+			"acf-embed/style.css": "blocks/acf-embed/style.scss"
+		}
+	}
+}
