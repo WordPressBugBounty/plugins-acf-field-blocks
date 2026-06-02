@@ -47,6 +47,22 @@ class Fields {
 			} elseif ( is_author() ) {
 				$source = 'user_' . get_query_var( 'author' );
 			}
+		} elseif ( 0 === stripos( $attr['fieldSource'], 'specific|post|' ) ) {
+			$id     = intval( $attr['fieldSourceValue'] ?? 0 );
+			$source = $id > 0 ? $id : false;
+		} elseif ( 0 === stripos( $attr['fieldSource'], 'specific|term|' ) ) {
+			$parts    = explode( '|', $attr['fieldSource'] );
+			$taxonomy = $parts[2] ?? '';
+			$id       = intval( $attr['fieldSourceValue'] ?? 0 );
+			$source   = ( $taxonomy && $id > 0 ) ? $taxonomy . '_' . $id : false;
+		} elseif ( 'specific|user' === $attr['fieldSource'] ) {
+			$id     = intval( $attr['fieldSourceValue'] ?? 0 );
+			$source = $id > 0 ? 'user_' . $id : false;
+		} elseif ( 'url_param' === $attr['fieldSource'] ) {
+			$source = self::resolve_url_param_source(
+				$attr['fieldSourceValue'] ?? '',
+				$attr['fieldSourceMeta'] ?? array()
+			);
 		} elseif ( 0 === stripos( $attr['fieldSource'], 'repeater|' ) ) {
 			$ancestors = explode( "/", str_replace( 'repeater|', '', $attr['fieldSource'] ) );
 			$parent    = $ancestors[ count( $ancestors ) - 1 ];
@@ -84,6 +100,118 @@ class Fields {
 		$field['source'] = $source;
 
 		return $field;
+	}
+
+	/**
+	 * Resolve a URL-param-based ACF field source identifier.
+	 *
+	 * Reads $_GET[ $param_name ] and validates the value according to the
+	 * supplied match rule. When $meta['rule'] is empty (auto-detect), accepts
+	 * any of the ACF source identifier shapes:
+	 *   - "{post_id}"            numeric post ID
+	 *   - "{taxonomy}_{term_id}" term identifier (e.g. category_5)
+	 *   - "user_{user_id}"       user identifier
+	 *
+	 * Otherwise dispatches to a specific lookup driven by $meta['rule']:
+	 *   - "post_id"    / "post_slug"   ($meta['subtype'] = post type)
+	 *   - "user_id"    / "user_login"  / "user_email"
+	 *   - "term_id"    / "term_slug"   ($meta['subtype'] = taxonomy)
+	 *
+	 * @param  string $param_name The URL query parameter name.
+	 * @param  array  $meta       Optional match rule metadata: { rule, subtype }.
+	 * @return int|string|false   Source identifier suitable for ACF, or false.
+	 */
+	public static function resolve_url_param_source( $param_name, $meta = array() ) {
+		$param_name = sanitize_key( $param_name );
+		if ( '' === $param_name || ! isset( $_GET[ $param_name ] ) ) {
+			return false;
+		}
+
+		$value = sanitize_text_field( wp_unslash( $_GET[ $param_name ] ) );
+		if ( '' === $value ) {
+			return false;
+		}
+
+		$rule    = is_array( $meta ) && isset( $meta['rule'] )    ? (string) $meta['rule']    : '';
+		$subtype = is_array( $meta ) && isset( $meta['subtype'] ) ? (string) $meta['subtype'] : '';
+
+		switch ( $rule ) {
+			case 'post_id':
+				if ( ! preg_match( '/^\d+$/', $value ) ) {
+					return false;
+				}
+				$id = intval( $value );
+				if ( $id <= 0 || ! get_post( $id ) ) {
+					return false;
+				}
+				if ( '' !== $subtype && get_post_type( $id ) !== $subtype ) {
+					return false;
+				}
+				return $id;
+
+			case 'post_slug':
+				if ( '' === $subtype || ! post_type_exists( $subtype ) ) {
+					return false;
+				}
+				$post = get_page_by_path( $value, OBJECT, $subtype );
+				return $post ? (int) $post->ID : false;
+
+			case 'user_id':
+				if ( ! preg_match( '/^\d+$/', $value ) ) {
+					return false;
+				}
+				$id = intval( $value );
+				return ( $id > 0 && get_userdata( $id ) ) ? 'user_' . $id : false;
+
+			case 'user_login':
+				$user = get_user_by( 'login', $value );
+				return $user ? 'user_' . (int) $user->ID : false;
+
+			case 'user_email':
+				if ( ! is_email( $value ) ) {
+					return false;
+				}
+				$user = get_user_by( 'email', $value );
+				return $user ? 'user_' . (int) $user->ID : false;
+
+			case 'term_id':
+				if ( '' === $subtype || ! taxonomy_exists( $subtype ) ) {
+					return false;
+				}
+				if ( ! preg_match( '/^\d+$/', $value ) ) {
+					return false;
+				}
+				$term = get_term( intval( $value ), $subtype );
+				if ( ! $term || is_wp_error( $term ) ) {
+					return false;
+				}
+				return $subtype . '_' . (int) $term->term_id;
+
+			case 'term_slug':
+				if ( '' === $subtype || ! taxonomy_exists( $subtype ) ) {
+					return false;
+				}
+				$term = get_term_by( 'slug', $value, $subtype );
+				return $term ? $subtype . '_' . (int) $term->term_id : false;
+		}
+
+		// Auto-detect (legacy behavior, used when rule is empty or unrecognized).
+		if ( preg_match( '/^user_(\d+)$/', $value, $m ) ) {
+			return 'user_' . intval( $m[1] );
+		}
+
+		if ( preg_match( '/^([a-z][a-z0-9_]*)_(\d+)$/', $value, $m ) ) {
+			$taxonomy = $m[1];
+			if ( taxonomy_exists( $taxonomy ) ) {
+				return $taxonomy . '_' . intval( $m[2] );
+			}
+		}
+
+		if ( preg_match( '/^\d+$/', $value ) ) {
+			return intval( $value );
+		}
+
+		return false;
 	}
 
 	/**

@@ -22,6 +22,7 @@ const FieldKeyControl = ({
 	label,
 	filterBy = {},
 	source,
+	sourceMeta = {},
 	value,
 	onChange,
 	context,
@@ -33,6 +34,8 @@ const FieldKeyControl = ({
 	const isDescendentOfQueryLoop = Number.isFinite( context?.queryId );
 	const isDescendentOfTermLoop = Number.isFinite( context?.termId );
 	const isSiteEditor = typeof window.pagenow !== 'undefined' && 'site-editor' === window.pagenow;
+	const urlParamRule    = sourceMeta?.rule    || '';
+	const urlParamSubtype = sourceMeta?.subtype || '';
 
 	useEffect( () => {
 		setRepeaterSubField( source.includes('repeater|') );
@@ -127,6 +130,45 @@ const FieldKeyControl = ({
 				object: 'option',
 				type: false
 			});
+		} else if ( source.startsWith('specific|post|') ) {
+			const [ , , pt ] = source.split('|');
+			setFieldSource({
+				object: 'post',
+				type: pt
+			});
+		} else if ( source.startsWith('specific|term|') ) {
+			const [ , , tx ] = source.split('|');
+			setFieldSource({
+				object: 'term',
+				type: tx
+			});
+		} else if ( 'specific|user' === source ) {
+			setFieldSource({
+				object: 'user',
+				type: false
+			});
+		} else if ( 'url_param' === source ) {
+			if ( urlParamRule.startsWith('post_') ) {
+				setFieldSource({
+					object: 'post',
+					type: urlParamSubtype || '__pending__'
+				});
+			} else if ( urlParamRule.startsWith('user_') ) {
+				setFieldSource({
+					object: 'user',
+					type: false
+				});
+			} else if ( urlParamRule.startsWith('term_') ) {
+				setFieldSource({
+					object: 'term',
+					type: urlParamSubtype || '__pending__'
+				});
+			} else {
+				setFieldSource({
+					object: false,
+					type: false
+				});
+			}
 		} else if ( source.includes('|') ) {
 			const [ obj, type ] = source.split('|');
 			setFieldSource({
@@ -134,7 +176,7 @@ const FieldKeyControl = ({
 				type: type
 			});
 		}
-	}, [source,isDescendentOfQueryLoop,context,isSiteEditor] );
+	}, [source,urlParamRule,urlParamSubtype,isDescendentOfQueryLoop,context,isSiteEditor] );
 
 	const {
 		fieldOptions,
@@ -149,6 +191,27 @@ const FieldKeyControl = ({
 					<Spinner />
 				</div>
 			</BaseControl>
+		)
+	}
+
+	if ( '__pending__' === fieldSource.type ) {
+		const pendingLabel = 'post' === fieldSource.object
+			? __( 'Select a post type first', 'acf-field-blocks' )
+			: __( 'Select a taxonomy first', 'acf-field-blocks' );
+		return (
+			<SelectControl
+				label={ ! repeaterSubField ? label : 'Sub Field Name' }
+				value={ '' }
+				options={ [
+					{
+						value: '',
+						label: pendingLabel
+					}
+				] }
+				disabled={ true }
+				__nextHasNoMarginBottom={true}
+				__next40pxDefaultSize={true}
+			/>
 		)
 	}
 

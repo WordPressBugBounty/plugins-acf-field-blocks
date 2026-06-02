@@ -3,7 +3,7 @@ Contributors: gamaup
 Tags: acf, block, meta field, meta field block, acf block
 Requires at least: 6.5
 Tested up to: 7.0
-Stable Tag: 1.5.0
+Stable Tag: 1.6.0
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -24,46 +24,16 @@ Want to see it in action? Watch the short demo video below to learn how it works
 * **No Code Needed** – Display your ACF & SCF fields directly in the editor without building a custom block.
 * **One Block for All Fields** – Load almost any field type using just a single, versatile block.
 * **Smart Field Picker** – No need to type field names. Choose from a dropdown that automatically shows only the ACF & SCF fields available for the post, page, or template you're editing.
-* **Flexible Output Control** – Style and format your field values directly in the editor, with output that always works correctly regardless of the field's return setting. 
-* **Supports Most ACF/SCF Field Types** – Including Text, Image, Post Object, Taxonomy, User, and more.
+* **Flexible Output Control** – Style and format your field values directly in the editor, with output that always works correctly regardless of the field's return setting.
+* **Works With Most Field Types** – From plain text and numbers to images, links, embeds, dates, and icons — most commonly used ACF/SCF field types render right out of the box.
 * **Supports All Field Locations** – Works with post fields, options pages, term fields, and user fields.
 * **Full Site Editing Ready** – Fully compatible with the WordPress Site Editor for building custom templates and theme parts.
 * **Dynamic Layouts Ready** – Seamlessly works inside Query Loops and reusable patterns for dynamic layouts.
 
 In addition to choosing which field to display, you also have control over how it appears. Text-based fields (including multiple-value fields like Select or Checkbox) can be shown as plain text or formatted with typography options. Image fields can be displayed as actual images with the same styling options as core Image blocks. For URL-return fields (such as Link or Post Object), you can render them as clickable buttons that automatically match your theme's design.
 
-With this flexibility, the plugin supports most commonly used field types right out of the box. Here's the full list of supported fields:
-
-* Text
-* Text Area
-* Number
-* Range
-* Email
-* URL
-* Password
-* Image
-* File
-* WYSIWYG Editor
-* oEmbed
-* Select
-* Checkbox
-* Radio Button
-* Button Group
-* True/False
-* Link
-* Post Object
-* Page Link
-* Relationship
-* Taxonomy
-* User
-* Google Map
-* Icon Picker
-* Date Picker
-* Date Time Picker
-* Time Picker
-* Color Picker
-
-In addition to the wide variety of field types, you also have control over where your fields are sourced from. This makes it easy to connect content dynamically based on the template you're editing.
+= Where Your Fields Come From =
+You also have control over where your fields are sourced from, making it easy to connect content dynamically based on the template you're editing.
 
 * **Post (any post type)** – Load fields attached to the post you're currently editing, whether it's a post, page, or any custom post type.
 * **Option** – Pull global option fields, perfect for site-wide settings like logos, contact info, or social links.
@@ -73,29 +43,40 @@ In addition to the wide variety of field types, you also have control over where
 Full documentation and usage guides are available at:
 [https://www.acffieldblocks.com/documentation/](https://www.acffieldblocks.com/documentation/?utm_source=wordpress.org&utm_medium=wp%20plugins%20repository)
 
-== PRO Version – Unlock Advanced Field Support ==
+== PRO Version – Unlock the Full Power of ACF & SCF ==
 
-Upgrade to the PRO version to extend your layouts even further with advanced field types. PRO not only adds support for complex field types but also introduces more advanced output options, giving you full control over how your content is displayed.
+Love the free version? PRO works exactly the same way — pick a block, pick a field, and you're done. Nothing you've already learned changes. PRO simply gives you more to pick from: more supported field types, more layout options, and new ways to choose where your content comes from.
 
-**Additional supported field types in PRO:**
+Sooner or later you'll hit a field the free version can't display on its own — a **Repeater**, a **Gallery**, a list of related posts, an interactive **Map**, or a nested **Group**. Normally that's where the fun stops and the PHP begins. PRO lets you build all of it right in the editor instead. Here's what you get:
 
-* **Repeater** – Easily transform your repeater fields into repeatable content sections inside the block editor. Each sub field can be accessed and styled individually, giving you full flexibility to match your layout needs. Display them as lists, grids, carousels, accordions, or tabs.
-* **Gallery** – Display your gallery fields as an image grid, masonry layout, or interactive carousel. Fine-tune responsive layouts with options for different screen sizes, and choose whether images open in a lightbox or link to the full-size version for an engaging user experience.
-* **Group** – Easily access and display sub fields inside group fields, no matter how deeply nested.
+= Support for Advanced Field Types (no PHP required) =
 
-The PRO version doesn't just add support for new field types, it also unlocks **powerful new display options** for fields already supported in the free plugin. These options let you loop through related content and build dynamic layouts directly in the block editor.
+* **Repeater** – Turn repeater rows into a styleable layout you compose right in the editor. Each sub field becomes its own block, styled with the controls you already know. Display rows as a **List, Grid, Carousel, Accordion, or Tabs**.
+* **Gallery** – Render gallery fields as a **Grid, Masonry, or interactive Carousel**, complete with a built-in lightbox and responsive options for different screen sizes.
+* **Group** – Access and display sub fields inside group fields individually, no matter how deeply nested.
 
-* **Post Object & Relationship** – Display these fields as dynamic post loops (List, Grid, or Carousel), similar to the Query Loop block, with the added ability to load custom fields within each post. Also supports Single Post display. Perfect for creating related posts sections or featured post displays.
-* **Taxonomy** – Render taxonomy fields as term loops (List, Grid, or Carousel), with the ability to access and display custom fields attached to each term. Also supports Single Term display. Ideal for flexible category, tag, or custom taxonomy layouts.
-* **User** – Display user fields as user loops (List, Grid, or Carousel), complete with ability to show custom fields attached to each user. Also supports Single User display. Great for building user directories, contributor listings, or team layouts.
-* **Google Map** – Display ACF Google Maps fields with custom markers and styling. Perfect for location-based content like store locators, event venues, or property listings.
-* **Embed Popup** – Display an ACF oEmbed or URL field inside a lightbox popup. The embed is only loaded on click, keeping your pages fast while providing rich media experiences.
+= 20+ Advanced Display Formats =
 
-**Block Visibility by ACF**
+PRO doesn't just add new field types — it unlocks powerful new ways to render the fields you already have.
 
-Blocks for ACF Fields PRO lets you control **when a block is displayed**, based on the value of an ACF or SCF field. This makes it easy to build smarter layouts without relying on custom PHP conditions or theme logic. Because visibility is handled at the block level, this works seamlessly across the block editor, site editor, templates, and patterns.
+* **Post Object & Relationship** – Display as dynamic post loops (**List, Grid, or Carousel**), similar to the Query Loop block, with the ability to load custom fields within each post. Also supports **Single Post** display — perfect for related posts sections and featured post displays.
+* **Taxonomy** – Render as term loops (**List, Grid, or Carousel**) with access to custom fields on each term, plus **Single Term** display. Ideal for flexible category, tag, or custom taxonomy layouts.
+* **User** – Display as user loops (**List, Grid, or Carousel**) with custom fields for each user, plus **Single User** display. Great for user directories, contributor listings, and team pages.
+* **Google Map** – Display ACF Google Maps fields as an interactive map with custom markers and styling. Perfect for store locators, event venues, or property listings.
+* **Embed Popup** – Show an oEmbed or URL field inside a lightbox popup that only loads on click — rich media without slowing your pages down.
 
-From simple field displays to advanced, dynamic layouts, Blocks for ACF Fields gives you full control over how your content appears in the block editor. Start with the free version, and unlock even more powerful options with PRO when you're ready to take your layouts further.
+= Dynamic Field Sources =
+
+Lite blocks always read from the **current** post, term, user, or an Options Page. PRO frees them:
+
+* **Specific Post / Term / User** – Pin a block to an entity you hand-pick at edit time. Build an editorially-chosen "Featured Page" promo or an "About the Founder" panel that lives anywhere and updates from a single source.
+* **URL Parameter** – Let the URL decide the entity at render time. One `/profile/` template can serve every user via `?uid=42`, `?uid=99`, and so on. Optional **Match Rules** validate the URL value as a Post ID, Post Slug, User ID, Username, Email, Term ID, or Term Slug — so one template powers profile pages, dynamic landing pages, and review tools without registering a custom route.
+
+= Block Visibility by ACF / SCF Value =
+
+Show or hide **any block** — not just ACF blocks, but every Group, Heading, Cover, and third-party block — based on the value of an ACF or SCF field. Build the rules visually in the block sidebar: pick a field, pick a comparison, give it a value. Combine multiple rules with **AND** (within a group) and **OR** (across groups), the same shape ACF's own conditional logic uses. Rules are evaluated **server-side at render time**, so hidden blocks emit no HTML at all — no empty wrappers, no client-side flash. In the editor, every block stays visible so you can keep editing.
+
+Start with the free version, build what you can, and upgrade only when you hit a wall. PRO is a standalone plugin — installing it automatically deactivates Lite to prevent conflicts, and your existing blocks, content, and field configuration are preserved.
 
 [Click here to learn more about PRO version](https://www.acffieldblocks.com/pro/?utm_source=wordpress.org&utm_medium=wp%20plugins%20repository&utm_campaign=BlocksforACFFields%20Pro%20Upgrade)
 
@@ -132,7 +113,7 @@ This plugin is built with developers in mind — perfect for those who want to s
 
 = Which ACF field types are supported? =
 
-This plugin supports most field types, including text, image, URL, true/false, select, date/time, and more. However, the following fields are not supported in the free version: Repeater, Group, Gallery, Google Maps, Icon, Flexible Content, and oEmbed.
+The free version supports most commonly used field types right out of the box. A few advanced types — Repeater, Group, Gallery, and Google Maps (as an interactive map) — require the PRO version, and Flexible Content is not currently supported in either version.
 
 = Can this plugin save or update ACF field values? =
 
@@ -151,6 +132,16 @@ Yes, of course.
 3. Field Settings
 
 == Changelog ==
+
+= 1.6.0 =
+*Jun 2nd, 2026*
+
+* [PRO Only] **NEW:** New "Specific" field sources — pull field values from a specific post, term, or user instead of the current context
+* [PRO Only] **NEW:** New "URL Param" field source — resolve the field source dynamically from a URL query parameter at render time
+* **UPDATE:** The ACF Field block's field loader now opens in a focused modal dialog instead of an inline placeholder, giving a clearer setup flow and room for advanced options
+* **UPDATE:** ACF Field blocks now display the selected field's label in the editor's List View and breadcrumb, making it easier to identify which field each block is showing
+* **UPDATE:** Reworked the sidebar "Field Settings" panel (renamed to "Field Info") into a compact, read-only summary of the selected source and field with a "Replace Field" button that opens the same picker modal used when inserting a block
+* **FIX:** Fixed "Objects are not valid as a React child" error when displaying User or Taxonomy fields in the editor
 
 = 1.5.0 =
 *Apr 15th, 2026*

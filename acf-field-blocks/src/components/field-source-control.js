@@ -13,7 +13,8 @@ import {
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import {
-	useFieldsLoader
+	useFieldsLoader,
+	getSpecificSourceOptions
 } from '../functions'
 
 const FieldSourceControl = ({
@@ -24,7 +25,8 @@ const FieldSourceControl = ({
 	help = null,
 	hideIfNoOptions = false,
 	repeaterFields = "both",
-	hideLabel = false
+	hideLabel = false,
+	hideSpecificSources = false
 }) => {
 
 	const [ sourceOptions, setSourceOptions ]             = useState([]);
@@ -39,6 +41,10 @@ const FieldSourceControl = ({
 		getField,
 		isLoadingFields
 	} = useFieldsLoader( value, context );
+
+	const { allFieldGroups } = useSelect( select => ({
+		allFieldGroups: select( 'acf-field-blocks/data' ).getAllFieldGroups()
+	}), [] );
 
 	useEffect( () => {
 		if ( isSiteEditor ) {
@@ -156,11 +162,19 @@ const FieldSourceControl = ({
 		if ( "only" === repeaterFields ) {
 			options = options.reverse();
 		}
+		if ( "only" !== repeaterFields && ! hideSpecificSources && window.ACFFieldBlocksPro?.isPro ) {
+			const specificOptions = getSpecificSourceOptions( allFieldGroups );
+			specificOptions.forEach( opt => options.push( opt ) );
+			options.push({
+				value: 'url_param',
+				label: __( 'URL Parameter', 'acf-field-blocks' )
+			});
+		}
 		setSourceOptions(options)
 		if ( 0 < options.length && "current_post" === value && -1 === options.findIndex( opt => opt.value === value ) ) {
 			onChange( options[0].value )
 		}
-	}, [isTermLoopDecendant,isTermTemplate,isUserLoopDecendant,isUserTemplate,ancestorOptions] )
+	}, [isTermLoopDecendant,isTermTemplate,isUserLoopDecendant,isUserTemplate,ancestorOptions,allFieldGroups] )
 
 	if ( isLoadingFields ) {
 		return (

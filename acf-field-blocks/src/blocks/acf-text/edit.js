@@ -35,9 +35,9 @@ import {
  * Internal dependencies
  */
 import {
-	FieldSourceControl,
-	FieldKeyControl,
+	FieldSettings,
 	FieldPlaceholder,
+	FieldSummary,
 } from '../../components'
 import {
 	useFieldsLoader
@@ -53,6 +53,8 @@ export default function Edit( {
 	attributes: {
 		fieldKey,
 		fieldSource,
+		fieldSourceValue,
+		fieldSourceMeta,
 		showMessageIfEmpty,
 		textAlign,
 		tag,
@@ -88,7 +90,7 @@ export default function Edit( {
 		isLoadingFields,
 		isLoadingValues,
 		hasContext
-	} = useFieldsLoader( fieldSource, context );
+	} = useFieldsLoader( fieldSource, context, fieldSourceValue );
 
 	useEffect( () => {
 		if ( fieldKey ) {
@@ -155,6 +157,49 @@ export default function Edit( {
 					label: 'User URL'
 				}
 			]);
+		} else if ( ['google_map'].includes( fieldType ) ) {
+			setFormatOptions([
+				{
+					value: 'address',
+					label: 'Address'
+				},
+				{
+					value: 'address_no_plus_code',
+					label: 'Address without plus code'
+				},
+				{
+					value: 'lat',
+					label: 'Latitude'
+				},
+				{
+					value: 'lng',
+					label: 'Longitude'
+				},
+				{
+					value: 'lat_lng',
+					label: 'Latitude and Longitude'
+				},
+				{
+					value: 'state',
+					label: 'State'
+				},
+				{
+					value: 'state_short',
+					label: 'State (Short)'
+				},
+				{
+					value: 'post_code',
+					label: 'Post Code'
+				},
+				{
+					value: 'country',
+					label: 'Country'
+				},
+				{
+					value: 'country_short',
+					label: 'Country (Short)'
+				}
+			]);
 		} else {
 			setFormatOptions([]);
 		}
@@ -175,6 +220,8 @@ export default function Edit( {
 			return __( 'Link to post', 'acf-field-blocks' );
 		} else if ( 'user' === fieldType || 'taxonomy' === fieldType ) {
 			return __( 'Link to archive page', 'acf-field-blocks' );
+		} else if ( 'google_map' === fieldType ) {
+			return __( 'Link to map', 'acf-field-blocks' );
 		}
 	}
 	
@@ -207,8 +254,25 @@ export default function Edit( {
 						setFormattedValue( fieldValue.post_title );
 					}
 				} else if ( ['select','checkbox','radio','button_group','user','taxonomy'].includes( fieldType ) ) {
+					const extractValue = val => {
+						if ( val && typeof val === 'object' ) {
+							const extracted = val[returnFormat];
+							return ( extracted === undefined || extracted === null ) ? '' : extracted;
+						}
+						return val ?? '';
+					};
 					if ( isMultipleField && isArray(fieldValue) ) {
-						setFormattedValue( fieldValue.map( val => val?.[returnFormat] ?? val ) );
+						setFormattedValue( fieldValue.map( extractValue ) );
+					} else {
+						setFormattedValue( extractValue( fieldValue ) );
+					}
+				} else if ( "google_map" === fieldType ) {
+					if ( "address_no_plus_code" === returnFormat ) {
+						// Remove plus code from address (format: "7C94+7MP, Rest of address")
+							const address = fieldValue?.address || '';
+							setFormattedValue( address.replace( /^[^,]+,\s*/, '' ) );
+					} else if ( "lat_lng" === returnFormat ) {
+						setFormattedValue( `${fieldValue?.lat}, ${fieldValue?.lng}` );
 					} else {
 						setFormattedValue( fieldValue?.[returnFormat] );
 					}
@@ -246,23 +310,18 @@ export default function Edit( {
 						label={ __( 'ACF Text', 'acf-field-blocks' ) }
 						isSelected
 					>
-						<FieldSourceControl
-							value={ fieldSource }
-							onChange={ value => setAttributes( { fieldSource: value } ) }
+						<FieldSettings
+							fieldSource={ fieldSource }
+							fieldSourceValue={ fieldSourceValue }
+							fieldSourceMeta={ fieldSourceMeta }
+							fieldKey={ fieldKey }
+							onChangeFieldSource={ value => setAttributes( { fieldSource: value } ) }
+							onChangeFieldSourceValue={ value => setAttributes( { fieldSourceValue: value } ) }
+							onChangeFieldSourceMeta={ value => setAttributes( { fieldSourceMeta: value } ) }
+							onChangeFieldKey={ value => setAttributes( { fieldKey: value } ) }
+							filterBy={ { return: "text" } }
+							context={ context }
 							clientId={ clientId }
-							context={ context }
-							help={ __( 'Select the object where the field is attached.', 'acf-field-blocks' ) }
-						/>
-						<FieldKeyControl
-							label={ __( "Field Name", "acf-field-blocks" ) }
-							filterBy={ {
-								return: "text"
-							} }
-							source={ fieldSource }
-							value={ fieldKey }
-							onChange={ fieldKey => setAttributes( { fieldKey } ) }
-							context={ context }
-							help={ __( 'Select a custom field to load', 'acf-field-blocks' ) }
 						/>
 					</FieldPlaceholder>
 				) }
@@ -295,48 +354,24 @@ export default function Edit( {
 
 			<InspectorControls>
 				<PanelBody
-					title={ __( 'Field Settings', 'acf-field-blocks' ) }
+					title={ __( 'Field Info', 'acf-field-blocks' ) }
 					initialOpen={ false }
 				>
-					<FieldSourceControl
-						value={ fieldSource }
-						onChange={ value => setAttributes( { fieldSource: value } ) }
+					<FieldSummary
+						fieldSource={ fieldSource }
+						fieldSourceValue={ fieldSourceValue }
+						fieldSourceMeta={ fieldSourceMeta }
+						fieldKey={ fieldKey }
+						setAttributes={ setAttributes }
 						clientId={ clientId }
-						help={ __( 'Select the object where the field is attached.', 'acf-field-blocks' ) }
+						blockName="acf-field-blocks/acf-text"
 						context={ context }
-					/>
-					<FieldKeyControl
-						label={ __( "Field Name", "acf-field-blocks" ) }
-						filterBy={ {
-							return: "text"
-						} }
-						source={ fieldSource }
-						value={ fieldKey }
-						onChange={ fieldKey => setAttributes( { fieldKey } ) }
-						context={ context }
-						help={ __( 'Select a custom field to load', 'acf-field-blocks' ) }
 					/>
 				</PanelBody>
 				<PanelBody
 					title={ __( 'Output Settings', 'acf-field-blocks' ) }
 				>
-					{ ["url","email",'post_object',"relationship","taxonomy","user"].includes(fieldType) && (
-						<ToggleControl
-							label={ linkToObjectLabel(fieldType) }
-							checked={ linkToObject }
-							onChange={ value => setAttributes( { linkToObject: value } ) }
-							__nextHasNoMarginBottom={true}
-						/>
-					) }
-					{ ( ["link","page_link"].includes(fieldType) || ( ['url','post_object',"relationship","taxonomy","user"].includes(fieldType) && linkToObject ) ) && (
-						<ToggleControl
-							label={ __( "Open in new tab", "acf-field-blocks" ) }
-							checked={ newTab }
-							onChange={ value => setAttributes( { newTab: value } ) }
-							__nextHasNoMarginBottom={true}
-						/>
-					) }
-					{ ['select','checkbox','radio','button_group','user','taxonomy'].includes( fieldType ) && (
+					{ ['select','checkbox','radio','button_group','user','taxonomy','google_map'].includes( fieldType ) && (
 						<SelectControl
 							label={ __( 'Field to Display', 'acf-field-blocks' ) }
 							value={ returnFormat }
@@ -344,6 +379,22 @@ export default function Edit( {
 							onChange={ returnFormat => setAttributes( { returnFormat } ) }
 							__nextHasNoMarginBottom={true}
 							__next40pxDefaultSize={true}
+						/>
+					) }
+					{ ["url","email",'post_object',"relationship","taxonomy","user","google_map"].includes(fieldType) && (
+						<ToggleControl
+							label={ linkToObjectLabel(fieldType) }
+							checked={ linkToObject }
+							onChange={ value => setAttributes( { linkToObject: value } ) }
+							__nextHasNoMarginBottom={true}
+						/>
+					) }
+					{ ( ["link","page_link"].includes(fieldType) || ( ['url','post_object',"relationship","taxonomy","user","google_map"].includes(fieldType) && linkToObject ) ) && (
+						<ToggleControl
+							label={ __( "Open in new tab", "acf-field-blocks" ) }
+							checked={ newTab }
+							onChange={ value => setAttributes( { newTab: value } ) }
+							__nextHasNoMarginBottom={true}
 						/>
 					) }
 					{ isMultipleField && ! ["ul","ol"].includes(tag) && (

@@ -7,11 +7,11 @@ import {
 } from '@wordpress/data';
 import { useEffect, useRef } from '@wordpress/element';
 
-export const useFieldsLoader = (fieldSource, context = false) => {
+export const useFieldsLoader = (fieldSource, context = false, fieldSourceValue = '') => {
 	let postId = 0;
 	let source = "current_post";
 
-	if ( fieldSource.includes('|') ) {
+	if ( fieldSource.includes('|') && ! fieldSource.startsWith('specific|') ) {
 		const [ type, parentField ] = fieldSource.split('|');
 		if ( context?.["acf-field-blocks/repeaters"] ) {
 			const parentKeys = parentField.split('/');
@@ -23,7 +23,7 @@ export const useFieldsLoader = (fieldSource, context = false) => {
 	} else {
 		source = fieldSource;
 	}
-	
+
 	if ( 'current_post' === source ) {
 		if ( Number.isFinite( context?.queryId ) ) {
 			postId = context?.postId;
@@ -45,6 +45,15 @@ export const useFieldsLoader = (fieldSource, context = false) => {
 		}
 	} else if ( 'option' === source ) {
 		postId = 'option';
+	} else if ( source.startsWith('specific|post|') ) {
+		postId = parseInt( fieldSourceValue ) || 0;
+	} else if ( source.startsWith('specific|term|') ) {
+		const [ , , tx ] = source.split('|');
+		postId = fieldSourceValue ? `${tx}_${fieldSourceValue}` : 0;
+	} else if ( 'specific|user' === source ) {
+		postId = fieldSourceValue ? `user_${fieldSourceValue}` : 0;
+	} else if ( 'url_param' === source ) {
+		postId = 0;
 	}
 	
 	// Create refs at the top level to follow Rules of Hooks
@@ -194,6 +203,9 @@ export function getFieldOptions( source, filterBy = {} ) {
 }
 
 export function isFieldGroupEligible( objectTypes, obj, type ) {
+	if ( false === obj ) {
+		return true;
+	}
 	for ( let i = 0; i < objectTypes.length; i++ ) {
 		if ( Array.isArray( type ) ) {
 			if ( obj === objectTypes[i].type && ( type.length === 0 || type.indexOf( objectTypes[i].subtype ) > -1 || 'all' === objectTypes[i].subtype ) ) {
@@ -211,6 +223,108 @@ export function isFieldGroupEligible( objectTypes, obj, type ) {
 	}
 
 	return false;
+}
+
+export function isSpecificSource( source ) {
+	if ( 'string' !== typeof source ) {
+		return false;
+	}
+	return 'url_param' === source || source.startsWith( 'specific|' );
+}
+
+export function sourceFamily( source ) {
+	if ( 'string' !== typeof source || '' === source ) {
+		return '';
+	}
+	if ( source.startsWith( 'specific|post|' ) || source.startsWith( 'specific|term|' ) ) {
+		return source;
+	}
+	if ( source.startsWith( 'repeater|' ) ) {
+		return 'repeater';
+	}
+	return source;
+}
+
+export function getSpecificSourceOptions( allFieldGroups ) {
+	const proData = ( 'undefined' !== typeof window ) ? window.ACFFieldBlocksPro : undefined;
+	if ( ! proData || ! proData.postTypes || ! proData.taxonomies ) {
+		return [];
+	}
+
+	const postTypes  = proData.postTypes;
+	const taxonomies = proData.taxonomies;
+	const excludedPostTypes = [ 'attachment', 'wp_block', 'wp_template', 'wp_template_part', 'wp_navigation' ];
+
+	const postEntries = new Map();
+	const termEntries = new Map();
+	let hasUser = false;
+
+	( allFieldGroups || [] ).forEach( group => {
+		( group?.object_types || [] ).forEach( objectType => {
+			const typeKind = objectType?.type;
+			const subtype  = objectType?.subtype;
+
+			if ( 'post' === typeKind ) {
+				if ( subtype && 'all' !== subtype ) {
+					postEntries.set( subtype, true );
+				} else {
+					Object.keys( postTypes ).forEach( pt => {
+						if ( ! excludedPostTypes.includes( pt ) ) {
+							postEntries.set( pt, true );
+						}
+					} );
+				}
+			} else if ( 'term' === typeKind ) {
+				if ( subtype && 'all' !== subtype ) {
+					termEntries.set( subtype, true );
+				} else {
+					Object.keys( taxonomies ).forEach( tx => {
+						termEntries.set( tx, true );
+					} );
+				}
+			} else if ( 'user' === typeKind ) {
+				hasUser = true;
+			}
+		} );
+	} );
+
+	const options = [];
+
+	postEntries.forEach( ( _, pt ) => {
+		const label = postTypes[ pt ] || pt;
+		options.push({
+			value: `specific|post|${pt}`,
+			label: __( 'Specific', 'acf-field-blocks' ) + ' ' + label,
+		});
+	} );
+
+	termEntries.forEach( ( _, tx ) => {
+		const label = taxonomies[ tx ] || tx;
+		options.push({
+			value: `specific|term|${tx}`,
+			label: __( 'Specific', 'acf-field-blocks' ) + ' ' + label,
+		});
+	} );
+
+	if ( hasUser ) {
+		options.push({
+			value: 'specific|user',
+			label: __( 'Specific User', 'acf-field-blocks' ),
+		});
+	}
+
+	const deduped = [];
+	const seen    = new Set();
+	options.forEach( opt => {
+		if ( ! seen.has( opt.value ) ) {
+			seen.add( opt.value );
+			deduped.push( opt );
+		}
+	} );
+
+	deduped.sort( ( a, b ) => a.label.localeCompare( b.label ) );
+
+	return deduped;
 }
 
 export function isFieldFiltered( field, filterBy = {} ) {
@@ -239,7 +353,7 @@ export function isFieldFiltered( field, filterBy = {} ) {
 }
 
 export function isFieldHasReturn( field, type ) {
-	if ( 'text' === type && ! ['image','file','oembed','icon_picker','gallery','google_map','message','accordion','tab','group','repeater','flexible_content','clone'].includes(field.type) ) {
+	if ( 'text' === type && ! ['image','file','oembed','icon_picker','gallery','message','accordion','tab','group','repeater','flexible_content','clone'].includes(field.type) ) {
 		return true;
 	} else if ( 'image' === type && 'image' === field.type ) {
 		return true;
@@ -256,6 +370,10 @@ export function isFieldHasReturn( field, type ) {
 	} else if ( 'user-loop' === type && 'user' === field.type ) {
 		return true;
 	} else if ( 'oembed' === type && 'oembed' === field.type ) {
+		return true;
+	} else if ( 'map' === type && 'google_map' === field.type ) {
+		return true;
+	} else if ( 'icon' === type && 'icon_picker' === field.type ) {
 		return true;
 	}
 	return false;

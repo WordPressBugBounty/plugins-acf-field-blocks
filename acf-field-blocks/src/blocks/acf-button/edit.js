@@ -47,9 +47,10 @@ import {
  * Internal dependencies
  */
 import {
-	FieldSourceControl,
+	FieldSettings,
 	FieldKeyControl,
 	FieldPlaceholder,
+	FieldSummary,
 } from '../../components'
 import {
 	useFieldsLoader,
@@ -66,6 +67,8 @@ export default function Edit( {
 	attributes: {
 		fieldKey,
 		fieldSource,
+		fieldSourceValue,
+		fieldSourceMeta,
 		buttonAlign,
 		textAlign,
 		textSource,
@@ -96,7 +99,7 @@ export default function Edit( {
 		isLoadingFields,
 		isLoadingValues,
 		hasContext
-	} = useFieldsLoader( fieldSource, context );
+	} = useFieldsLoader( fieldSource, context, fieldSourceValue );
 
 	useEffect( () => {
 		if ( fieldKey ) {
@@ -176,25 +179,19 @@ export default function Edit( {
 					label={ __( 'ACF Button Link', 'acf-field-blocks' ) }
 					isSelected={ isSelected }
 				>
-					<FieldSourceControl
-						value={ fieldSource }
-						onChange={ value => setAttributes( { fieldSource: value } ) }
+					<FieldSettings
+						fieldSource={ fieldSource }
+						fieldSourceValue={ fieldSourceValue }
+						fieldSourceMeta={ fieldSourceMeta }
+						fieldKey={ fieldKey }
+						onChangeFieldSource={ value => setAttributes( { fieldSource: value } ) }
+						onChangeFieldSourceValue={ value => setAttributes( { fieldSourceValue: value } ) }
+						onChangeFieldSourceMeta={ value => setAttributes( { fieldSourceMeta: value } ) }
+						onChangeFieldKey={ value => setAttributes( { fieldKey: value } ) }
+						filterBy={ { return: "link", multiple: false } }
+						context={ context }
 						clientId={ clientId }
-						hasNoMarginBottom={ true }
-						context={ context }
-						help={ __( 'Select the object where the field is attached.', 'acf-field-blocks' ) }
-					/>
-					<FieldKeyControl
-						label={ __( "Field Name", "acf-field-blocks" ) }
-						filterBy={ {
-							return: "link",
-							multiple: false
-						} }
-						source={ fieldSource }
-						value={ fieldKey }
-						onChange={ fieldKey => setAttributes( { fieldKey } ) }
-						context={ context }
-						help={ __( 'Select a custom field with link to load', 'acf-field-blocks' ) }
+						fieldHelp={ __( 'Select a custom field with a link to load', 'acf-field-blocks' ) }
 					/>
 				</FieldPlaceholder>
 			</div>
@@ -238,27 +235,18 @@ export default function Edit( {
 
 			<InspectorControls>
 				<PanelBody
-					title={ __( 'Field Settings', 'acf-field-blocks' ) }
+					title={ __( 'Field Info', 'acf-field-blocks' ) }
 					initialOpen={ false }
 				>
-					<FieldSourceControl
-						value={ fieldSource }
-						onChange={ value => setAttributes( { fieldSource: value } ) }
+					<FieldSummary
+						fieldSource={ fieldSource }
+						fieldSourceValue={ fieldSourceValue }
+						fieldSourceMeta={ fieldSourceMeta }
+						fieldKey={ fieldKey }
+						setAttributes={ setAttributes }
 						clientId={ clientId }
+						blockName="acf-field-blocks/acf-button"
 						context={ context }
-						help={ __( 'Select the object where the field is attached.', 'acf-field-blocks' ) }
-					/>
-					<FieldKeyControl
-						label={ __( "Field Name", "acf-field-blocks" ) }
-						filterBy={ {
-							return: "link",
-							multiple: false
-						} }
-						source={ fieldSource }
-						value={ fieldKey }
-						onChange={ fieldKey => setAttributes( { fieldKey } ) }
-						context={ context }
-						help={ __( 'Only fields that return text are available.', 'acf-field-blocks' ) }
 					/>
 				</PanelBody>
 

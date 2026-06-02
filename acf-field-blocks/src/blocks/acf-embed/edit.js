@@ -33,9 +33,9 @@ import { store as coreStore } from '@wordpress/core-data';
  */
 import EmbedPreview from './embed-preview';
 import {
-  FieldSourceControl,
-  FieldKeyControl,
+  FieldSettings,
   FieldPlaceholder,
+  FieldSummary,
 } from '../../components'
 import {
   useFieldsLoader
@@ -49,6 +49,8 @@ export default function Edit( {
   attributes: {
     fieldKey,
     fieldSource,
+    fieldSourceValue,
+    fieldSourceMeta,
     showMessageIfEmpty,
     emptyMessage
   },
@@ -67,7 +69,7 @@ export default function Edit( {
     isLoadingFields,
     isLoadingValues,
     hasContext
-  } = useFieldsLoader( fieldSource, context );
+  } = useFieldsLoader( fieldSource, context, fieldSourceValue );
 
   useEffect( () => {
     if ( fieldKey ) {
@@ -161,23 +163,18 @@ export default function Edit( {
             label={ __( 'ACF Embed', 'acf-field-blocks' ) }
             isSelected
           >
-            <FieldSourceControl
-              value={ fieldSource }
-              onChange={ value => setAttributes( { fieldSource: value } ) }
+            <FieldSettings
+              fieldSource={ fieldSource }
+              fieldSourceValue={ fieldSourceValue }
+              fieldSourceMeta={ fieldSourceMeta }
+              fieldKey={ fieldKey }
+              onChangeFieldSource={ value => setAttributes( { fieldSource: value } ) }
+              onChangeFieldSourceValue={ value => setAttributes( { fieldSourceValue: value } ) }
+              onChangeFieldSourceMeta={ value => setAttributes( { fieldSourceMeta: value } ) }
+              onChangeFieldKey={ value => setAttributes( { fieldKey: value } ) }
+              filterBy={ { type: ["oembed","url"] } }
+              context={ context }
               clientId={ clientId }
-              context={ context }
-              help={ __( 'Select the object where the field is attached.', 'acf-field-blocks' ) }
-            />
-            <FieldKeyControl
-              label={ __( "Field Name", "acf-field-blocks" ) }
-              filterBy={ {
-                type: ["oembed","url"]
-              } }
-              source={ fieldSource }
-              value={ fieldKey }
-              onChange={ fieldKey => setAttributes( { fieldKey } ) }
-              context={ context }
-              help={ __( 'Select a custom field to load', 'acf-field-blocks' ) }
             />
           </FieldPlaceholder>
         ) }
@@ -190,26 +187,18 @@ export default function Edit( {
 
       <InspectorControls>
         <PanelBody
-          title={ __( 'Field Settings', 'acf-field-blocks' ) }
+          title={ __( 'Field Info', 'acf-field-blocks' ) }
           initialOpen={ false }
         >
-          <FieldSourceControl
-            value={ fieldSource }
-            onChange={ value => setAttributes( { fieldSource: value } ) }
+          <FieldSummary
+            fieldSource={ fieldSource }
+            fieldSourceValue={ fieldSourceValue }
+            fieldSourceMeta={ fieldSourceMeta }
+            fieldKey={ fieldKey }
+            setAttributes={ setAttributes }
             clientId={ clientId }
-            help={ __( 'Select the object where the field is attached.', 'acf-field-blocks' ) }
+            blockName="acf-field-blocks/acf-embed"
             context={ context }
-          />
-          <FieldKeyControl
-            label={ __( "Field Name", "acf-field-blocks" ) }
-            filterBy={ {
-							type: ["oembed","url"]
-						} }
-            source={ fieldSource }
-            value={ fieldKey }
-            onChange={ fieldKey => setAttributes( { fieldKey } ) }
-            context={ context }
-            help={ __( 'Select a custom field to load', 'acf-field-blocks' ) }
           />
         </PanelBody>
         <PanelBody

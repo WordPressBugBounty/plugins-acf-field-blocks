@@ -8,56 +8,60 @@ import { __ } from '@wordpress/i18n';
 import {
 	useDispatch
 } from '@wordpress/data';
-import { createBlock } from '@wordpress/blocks';
+import { ExternalLink } from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
 import {
-	FieldSelector
+	FieldPickerModal
 } from '../../components'
+import { useFieldLoader } from '../../utils/use-field-loader'
 
 export default function Edit( {
 	clientId,
 	attributes: {
 		fieldKey,
-		fieldSource
+		fieldSource,
+		fieldSourceValue,
+		fieldSourceMeta
 	},
-	attributes,
-	setAttributes,
 	isSelected,
 	context
 } ) {
 
 	const {
-		replaceBlock
+		removeBlock
 	} = useDispatch( 'core/block-editor' );
 
-	const loadField = (type,attrs={}) => {
-		if ( fieldKey && type ) {
-			const insertedBlock = createBlock( `acf-field-blocks/acf-${type}`, {
-				fieldKey,
-				fieldSource,
-				...attrs
-			} );
-			replaceBlock( clientId, insertedBlock )
-		}
-	}
-	
+	const loadField = useFieldLoader( clientId, null );
+
 	const blockProps = useBlockProps();
 
 	return (
 		<div { ...blockProps }>
-			{ ! isSelected ? 'ACF Field' : (
-				<FieldSelector
-					label={ __( 'ACF Field', 'acf-field-blocks' ) }
-					selectedSource={ fieldSource }
-					selectedField={ fieldKey }
-					onSelectSource={ fieldSource => setAttributes( { fieldSource } ) }
-					onSelectField={ fieldKey => setAttributes( { fieldKey } ) }
+			{ __( 'ACF Field', 'acf-field-blocks' ) }
+			{ isSelected && (
+				<FieldPickerModal
+					title={ __( 'Load an ACF Field', 'acf-field-blocks' ) }
+					initialSource={ fieldSource }
+					initialSourceValue={ fieldSourceValue }
+					initialSourceMeta={ fieldSourceMeta }
+					initialField={ fieldKey }
 					context={ context }
 					clientId={ clientId }
-					onLoadField={ loadField }
+					onClose={ () => removeBlock( clientId ) }
+					onCommit={ ( blockSlug, extraAttrs, fieldAttrs ) =>
+						loadField( blockSlug, extraAttrs, fieldAttrs )
+					}
+					footerStart={
+						<ExternalLink
+							href="https://www.acffieldblocks.com/documentation/getting-started/how-to-use/?utm_source=fieldpicker&utm_medium=wp%20block%20editor&utm_campaign=BlocksforACFFields%20Documentation"
+							className="acf-field-blocks-picker-modal__doc-link"
+						>
+							{ __( 'Documentation', 'acf-field-blocks' ) }
+						</ExternalLink>
+					}
 				/>
 			) }
 		</div>

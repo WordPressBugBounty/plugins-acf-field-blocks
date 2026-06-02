@@ -8,246 +8,268 @@ import {
 import {
 	SelectControl,
 	Button,
-	Notice
+	Notice,
+	Popover,
+	Icon,
 } from '@wordpress/components';
+import { info } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 
-import FieldKeyControl from '../field-key-control'
-import FieldSourceControl from '../field-source-control'
+import FieldSettings from '../field-settings'
 import {
 	useFieldsLoader,
-	isFieldHasReturn
+	isFieldHasReturn,
+	isSpecificSource
 } from '../../functions'
+import { displayAsToBlock } from '../../utils/display-as-to-block'
+import { DISPLAY_OPTION_DESCRIPTIONS, PRO_OPTIONS } from './display-options'
 
 const FieldSelector = ({
 	label,
 	selectedSource,
+	selectedSourceValue = '',
+	selectedSourceMeta = {},
 	selectedField,
 	onSelectSource,
+	onSelectSourceValue = () => {},
+	onSelectSourceMeta = () => {},
 	onSelectField,
 	onLoadField,
 	context,
 	clientId,
-	repeaterFields = "hide"
+	repeaterFields = "hide",
+	className = '',
+	footerStart = null
 }) => {
 
 	const [ blockTypeOptions, setBlockTypeOptions ]   = useState([]);
 	const [ displayAs, setDisplayAs ]                 = useState('');
 	const [ selectedFieldType, setSelectedFieldType ] = useState('');
-	
+	const [ fieldFilter, setFieldFilter ]             = useState({});
+	const [ showTooltip, setShowTooltip ]             = useState( false );
+	const [ hasProOnlyOptions, setHasProOnlyOptions ] = useState( false );
+
 	const {
 		getField,
 		getValue,
 		isLoadingFields
-	} = useFieldsLoader( selectedSource, context );
+	} = useFieldsLoader( selectedSource, context, selectedSourceValue );
+
+	useEffect( () => {
+		if ( 'map' === displayAs ) {
+			setFieldFilter({ type: ['google_map'] });
+		} else {
+			setFieldFilter({});
+		}
+	}, [ displayAs ] );
+
+	const isPro = window.ACFFieldBlocksPro?.isPro;
+
+	const addOption = ( options, value, label, descriptionKey ) => {
+		const isProOption = PRO_OPTIONS.has( value );
+		const desc = descriptionKey || value;
+		if ( isProOption && ! isPro ) {
+			options.push({ value, label: `${ label } (Pro)`, disabled: true, desc });
+		} else {
+			options.push({ value, label, desc });
+		}
+	};
 
 	useEffect( () => {
 		let typeOptions = [];
 		if ( selectedField ) {
 			if ( ! isLoadingFields ) {
 				const field = getField( selectedField );
+				if ( ! field ) {
+					setBlockTypeOptions( typeOptions );
+					return;
+				}
 				setSelectedFieldType( field.type )
 				if ( isFieldHasReturn( field, 'text' ) ) {
-					typeOptions.push({
-						value: 'text',
-						label: 'Text'
-					});
+					addOption( typeOptions, 'text', 'Text' );
 				}
 				if ( isFieldHasReturn( field, 'image' ) ) {
-					typeOptions.push({
-						value: 'image',
-						label: 'Image'
-					});
+					addOption( typeOptions, 'image', 'Image' );
 				}
 				if ( isFieldHasReturn( field, 'link' ) ) {
-					typeOptions.push({
-						value: 'button',
-						label: 'Button'
-					});
+					addOption( typeOptions, 'button', 'Button' );
 				}
 				if ( isFieldHasReturn( field, 'oembed' ) || 'url' === field.type ) {
-					typeOptions.push({
-						value: 'embed',
-						label: 'Embed'
-					});
+					addOption( typeOptions, 'embed', 'Embed' );
+					addOption( typeOptions, 'embed-popup', 'Embed Popup' );
 				}
-				if ( window.ACFFieldBlocksPro?.isPro ) {
-					if ( isFieldHasReturn( field, 'repeater' ) ) {
-						typeOptions.push({
-							value: 'repeater-list',
-							label: 'List'
-						});
-						typeOptions.push({
-							value: 'repeater-grid',
-							label: 'Grid'
-						});
-						typeOptions.push({
-							value: 'repeater-carousel',
-							label: 'Carousel'
-						});
-						typeOptions.push({
-							value: 'repeater-accordion',
-							label: 'Accordion'
-						});
-						typeOptions.push({
-							value: 'repeater-tabs',
-							label: 'Tabs'
-						});
+				if ( isFieldHasReturn( field, 'icon' ) ) {
+					addOption( typeOptions, 'icon', 'Icon' );
+				}
+				if ( 'google_map' === field.type ) {
+					addOption( typeOptions, 'map', 'Map' );
+				}
+				if ( isFieldHasReturn( field, 'repeater' ) ) {
+					addOption( typeOptions, 'repeater-list', 'List' );
+					addOption( typeOptions, 'repeater-grid', 'Grid' );
+					addOption( typeOptions, 'repeater-carousel', 'Carousel' );
+					addOption( typeOptions, 'repeater-accordion', 'Accordion' );
+					addOption( typeOptions, 'repeater-tabs', 'Tabs' );
+				}
+				if ( isFieldHasReturn( field, 'gallery' ) ) {
+					addOption( typeOptions, 'gallery-grid', 'Image Grid' );
+					addOption( typeOptions, 'gallery-carousel', 'Image Carousel' );
+					addOption( typeOptions, 'gallery-masonry', 'Image Masonry' );
+				}
+				if ( isFieldHasReturn( field, 'post-loop' ) ) {
+					if ( field.multiple ) {
+						addOption( typeOptions, 'post-list', 'Post Loop - List' );
+						addOption( typeOptions, 'post-grid', 'Post Loop - Grid' );
+						addOption( typeOptions, 'post-carousel', 'Post Loop - Carousel' );
+					} else {
+						addOption( typeOptions, 'post-list', 'Single Post', 'single-post' );
 					}
-					if ( isFieldHasReturn( field, 'gallery' ) ) {
-						typeOptions.push({
-							value: 'gallery-grid',
-							label: 'Image Grid'
-						});
-						typeOptions.push({
-							value: 'gallery-carousel',
-							label: 'Image Carousel'
-						});
-						typeOptions.push({
-							value: 'gallery-masonry',
-							label: 'Image Masonry'
-						});
+				}
+				if ( isFieldHasReturn( field, 'term-loop' ) ) {
+					if ( field.multiple ) {
+						addOption( typeOptions, 'term-list', 'Term Loop - List' );
+						addOption( typeOptions, 'term-grid', 'Term Loop - Grid' );
+						addOption( typeOptions, 'term-carousel', 'Term Loop - Carousel' );
+					} else {
+						addOption( typeOptions, 'term-list', 'Single Term', 'single-term' );
 					}
-					if ( isFieldHasReturn( field, 'post-loop' ) ) {
-						if ( field.multiple ) {
-							typeOptions.push({
-								value: 'post-list',
-								label: 'Post Loop - List'
-							});
-							typeOptions.push({
-								value: 'post-grid',
-								label: 'Post Loop - Grid'
-							});
-							typeOptions.push({
-								value: 'post-carousel',
-								label: 'Post Loop - Carousel'
-							});
-						} else {
-							typeOptions.push({
-								value: 'post-list',
-								label: 'Single Post'
-							});
-						}
-					}
-					if ( isFieldHasReturn( field, 'term-loop' ) ) {
-						if ( field.multiple ) {
-							typeOptions.push({
-								value: 'term-list',
-								label: 'Term Loop - List'
-							});
-							typeOptions.push({
-								value: 'term-grid',
-								label: 'Term Loop - Grid'
-							});
-							typeOptions.push({
-								value: 'term-carousel',
-								label: 'Term Loop - Carousel'
-							});
-						} else {
-							typeOptions.push({
-								value: 'term-list',
-								label: 'Single Term'
-							});
-						}
-					}
-					if ( isFieldHasReturn( field, 'user-loop' ) ) {
-						if ( field.multiple ) {
-							typeOptions.push({
-								value: 'user-list',
-								label: 'User Loop - List'
-							});
-							typeOptions.push({
-								value: 'user-grid',
-								label: 'User Loop - Grid'
-							});
-							typeOptions.push({
-								value: 'user-carousel',
-								label: 'User Loop - Carousel'
-							});
-						} else {
-							typeOptions.push({
-								value: 'user-list',
-								label: 'Single User'
-							});
-						}
+				}
+				if ( isFieldHasReturn( field, 'user-loop' ) ) {
+					if ( field.multiple ) {
+						addOption( typeOptions, 'user-list', 'User Loop - List' );
+						addOption( typeOptions, 'user-grid', 'User Loop - Grid' );
+						addOption( typeOptions, 'user-carousel', 'User Loop - Carousel' );
+					} else {
+						addOption( typeOptions, 'user-list', 'Single User', 'single-user' );
 					}
 				}
 			}
 		}
+		const hasSelectableOption = typeOptions.some( opt => ! opt.disabled );
+		const proOnly = typeOptions.length > 0 && ! hasSelectableOption;
+		setHasProOnlyOptions( proOnly );
+		if ( proOnly ) {
+			typeOptions = [];
+		}
 		setBlockTypeOptions( typeOptions );
 		if ( typeOptions.length ) {
-			setDisplayAs( typeOptions[0].value );
+			const firstSelectable = typeOptions.find( opt => ! opt.disabled );
+			setDisplayAs( firstSelectable ? firstSelectable.value : '' );
 		} else {
 			setDisplayAs('');
 		}
 	}, [ selectedSource, selectedField, isLoadingFields] );
 
 	const handleLoadField = () => {
-		if ( displayAs.includes("gallery") || displayAs.includes("post") || displayAs.includes("term") || displayAs.includes("user") ) {
-			let [block,type] = displayAs.split('-');
-			if ( 'post' === block ) {
-				block = 'post-loop';
-			} else if ( 'term' === block ) {
-				block = 'term-loop';
-			} else if ( 'user' === block ) {
-				block = 'user-loop';
-			}
-			onLoadField(block,{type})
-		} else if ( displayAs.includes("repeater") ) {
-			let [block,type] = displayAs.split('-');
-			if ( ! [ 'accordion', 'tabs' ].includes(type) ) {
-				onLoadField(block,{type})
-			} else {
-				onLoadField(type)	
-			}
-		} else {
-			onLoadField(displayAs)
-		}
+		const { blockName, extraAttrs } = displayAsToBlock( displayAs );
+		onLoadField( blockName, extraAttrs );
 	}
 
+	const requiresSourceValue = isSpecificSource( selectedSource );
+
 	return (
-		<div className="acf-field-selector">
+		<div className={ `acf-field-selector${ className ? ' ' + className : '' }` }>
 			<div className="acf-field-selector__label">{ label }</div>
 			<div className="acf-field-selector__fieldset">
-				<FieldSourceControl
-					value={ selectedSource }
-					onChange={ onSelectSource }
-					clientId={ clientId }
-					hasNoMarginBottom={ true }
-					context={ context }
-					hideIfNoOptions={ false }
+				<FieldSettings
+					fieldSource={ selectedSource }
+					fieldSourceValue={ selectedSourceValue }
+					fieldSourceMeta={ selectedSourceMeta }
+					fieldKey={ selectedField }
+					onChangeFieldSource={ onSelectSource }
+					onChangeFieldSourceValue={ onSelectSourceValue }
+					onChangeFieldSourceMeta={ onSelectSourceMeta }
+					onChangeFieldKey={ value => onSelectField( value ) }
+					filterBy={ fieldFilter }
 					repeaterFields={ repeaterFields }
-				/>
-				<FieldKeyControl
-					label={ __( "Field Name", "acf-field-blocks" ) }
-					source={ selectedSource }
-					value={ selectedField }
-					onChange={ value => onSelectField( value ) }
 					context={ context }
+					clientId={ clientId }
+					sourceHelp={ null }
+					fieldHelp={ null }
 				/>
 				{ 1 < blockTypeOptions.length && (
 					<div className="smaller-field">
 						<SelectControl
-							label={ __( 'Display Field as', 'acf-field-blocks' ) }
+							label={
+								<>
+									{ __( 'Display Field as', 'acf-field-blocks' ) }
+									<span
+										className="acf-field-selector__info-icon"
+										onMouseEnter={ () => setShowTooltip( true ) }
+										onMouseLeave={ () => setShowTooltip( false ) }
+									>
+										<Icon icon={ info } size={ 16 } />
+										{ showTooltip && (
+											<Popover
+												placement="top"
+												animate={ false }
+												noArrow={ false }
+												focusOnMount={ false }
+												className="acf-field-selector__tooltip"
+											>
+												<div className="acf-field-selector__tooltip-content">
+													{ blockTypeOptions.map( ( opt, i ) => {
+														const label = opt.label.replace( / \(Pro\)$/, '' );
+														const desc = DISPLAY_OPTION_DESCRIPTIONS[ opt.desc ] || '';
+														const suffix = opt.disabled ? ' (Pro)' : '';
+														return (
+															<div key={ i } className="acf-field-selector__tooltip-item">
+																<strong>{ label }{ suffix }</strong>
+																<span>{ desc }</span>
+															</div>
+														);
+													} ) }
+												</div>
+											</Popover>
+										) }
+									</span>
+								</>
+							}
 							value={ displayAs }
-							onChange={ value => setDisplayAs( value ) }
+							onChange={ value => {
+								if ( ! isPro && PRO_OPTIONS.has( value ) ) {
+									return;
+								}
+								setDisplayAs( value );
+							} }
 							options={ blockTypeOptions }
 							__nextHasNoMarginBottom={true}
 							__next40pxDefaultSize={true}
 						/>
 					</div>
 				) }
-				<Button
-					__next40pxDefaultSize={ true }
-					variant="primary"
-					text={ "only" === repeaterFields ? __( "Load Sub Field", "acf-field-blocks" ) : __( "Load Field", "acf-field-blocks" ) }
-					disabled={ ! selectedField || 0 === blockTypeOptions.length }
-					onClick={ handleLoadField }
-				/>
+				{ footerStart ? (
+					<div className="acf-field-selector__footer">
+						<div className="acf-field-selector__footer-start">{ footerStart }</div>
+						<Button
+							__next40pxDefaultSize={ true }
+							variant="primary"
+							text={ "only" === repeaterFields ? __( "Load Sub Field", "acf-field-blocks" ) : __( "Load Field", "acf-field-blocks" ) }
+							disabled={
+								! selectedField
+								|| 0 === blockTypeOptions.length
+								|| ( requiresSourceValue && ! selectedSourceValue )
+							}
+							onClick={ handleLoadField }
+						/>
+					</div>
+				) : (
+					<Button
+						__next40pxDefaultSize={ true }
+						variant="primary"
+						text={ "only" === repeaterFields ? __( "Load Sub Field", "acf-field-blocks" ) : __( "Load Field", "acf-field-blocks" ) }
+						disabled={
+							! selectedField
+							|| 0 === blockTypeOptions.length
+							|| ( requiresSourceValue && ! selectedSourceValue )
+						}
+						onClick={ handleLoadField }
+					/>
+				) }
 			</div>
 			{ selectedField && 0 === blockTypeOptions.length && (
 				<>
-					{ ! window.ACFFieldBlocksPro?.isPro && ( ["gallery","repeater","group"].includes(selectedFieldType) ) ? (
+					{ hasProOnlyOptions ? (
 						<Notice
 							status="warning"
 							isDismissible={false}

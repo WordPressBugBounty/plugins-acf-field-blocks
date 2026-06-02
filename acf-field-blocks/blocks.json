@@ -25,5 +25,12 @@
 			"acf-embed/editor.css": "blocks/acf-embed/editor.scss",
 			"acf-embed/style.css": "blocks/acf-embed/style.scss"
 		}
+	},
+	"acf-icon": {
+		"block": "blocks/acf-icon/block.json",
+		"assets": {
+			"acf-icon/editor.css": "blocks/acf-icon/editor.scss",
+			"acf-icon/style.css": "blocks/acf-icon/style.scss"
+		}
 	}
 }
