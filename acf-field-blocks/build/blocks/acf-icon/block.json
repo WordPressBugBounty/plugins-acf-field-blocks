@@ -1,0 +1,57 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "acf-field-blocks/acf-icon",
+	"title": "ACF Icon",
+	"description": "Display ACF Icon Picker field as an icon.",
+	"category": "acf-field-blocks",
+	"textdomain": "acf-field-blocks",
+	"usesContext": [
+		"postId",
+		"postType",
+		"queryId",
+		"termId",
+		"taxonomy",
+		"acf-field-blocks/repeaters",
+		"acf-field-blocks/taxonomy",
+		"acf-field-blocks/term",
+		"acf-field-blocks/user"
+	],
+	"attributes": {
+		"fieldKey": {
+			"type": "string",
+			"default": ""
+		},
+		"fieldSource": {
+			"type": "string",
+			"default": ""
+		},
+		"iconSize": {
+			"type": "number",
+			"default": 24
+		},
+		"defaultIcon": {
+			"type": "number",
+			"default": 0
+		}
+	},
+	"supports": {
+		"interactivity": true,
+		"align": ["left", "center", "right"],
+		"color": {
+			"text": false,
+			"background": false
+		},
+		"filter": {
+			"duotone": true
+		},
+		"html": false,
+		"spacing": {
+			"margin": true,
+			"padding": false
+		},
+		"inserter": false
+	},
+	"editorStyle": "acf-field-icon-editor",
+	"style": "acf-field-icon-style"
+}
