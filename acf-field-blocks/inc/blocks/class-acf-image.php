@@ -84,6 +84,29 @@ class ACF_Image {
 			return '';
 		}
 
+		// Wrap the image in a link when a link destination is set.
+		$link_url = $this->resolve_link_url( $attr, $block, $image_id );
+		if ( ! empty( $link_url ) ) {
+			$rel = '';
+			if ( isset( $attr['linkTarget'] ) && '_blank' === $attr['linkTarget'] ) {
+				$rel .= 'noreferrer noopener ';
+			}
+			if ( ! empty( $attr['rel'] ) ) {
+				$rel .= $attr['rel'];
+			}
+
+			$link_attributes = Helper::build_attrs(
+				array(
+					'href'   => esc_url( $link_url ),
+					'class'  => $attr['linkClass'] ?? '',
+					'target' => $attr['linkTarget'] ?? '',
+					'rel'    => trim( $rel ),
+				)
+			);
+
+			$image = '<a ' . $link_attributes . '>' . $image . '</a>';
+		}
+
 		$image = $image . $overlay_markup;
 
 		$aspect_ratio = ! empty( $attr['aspectRatio'] )
@@ -102,11 +125,98 @@ class ACF_Image {
 		}
 		$output = "<figure " . wp_kses_post( $wrapper_attributes ) . ">" . wp_kses_post( $image ) . "</figure>";
 
+		/*
+		 * Reuse WordPress core's native (Interactivity API) image lightbox when
+		 * the "On Click" action is set to "Open in lightbox".
+		 * `block_core_image_render_lightbox()` injects the directives + trigger
+		 * button and prints the shared overlay dialog in the footer.
+		 */
+		if (
+			'lightbox' === ( $attr['linkDestination'] ?? 'none' ) &&
+			function_exists( 'block_core_image_render_lightbox' )
+		) {
+			wp_enqueue_script_module( '@wordpress/block-library/image/view' );
+			// The lightbox overlay styles live in core/image's stylesheet.
+			wp_enqueue_style( 'wp-block-image' );
+
+			$synthetic_block = array(
+				'attrs' => array(
+					'id'    => $image_id,
+					'scale' => $attr['scale'] ?? null,
+				),
+			);
+
+			$output = block_core_image_render_lightbox( $output, $synthetic_block, $block );
+		}
+
 		$output = Helper::apply_filters( 'afb/output', $field, $output, $field, $attr );
 		$output = Helper::apply_filters( 'afb/image/output', $field, $output, $field, $attr );
 
 		return $output;
 
+	}
+
+	/**
+	 * Resolve the link URL for the image based on the chosen link destination.
+	 *
+	 * @param array    $attr     Block attributes.
+	 * @param WP_Block $block    Block instance.
+	 * @param int      $image_id Attachment ID of the rendered image.
+	 * @return string            Link URL, or empty string when not linked.
+	 */
+	private function resolve_link_url( $attr, $block, $image_id ) {
+		$destination = $attr['linkDestination'] ?? 'none';
+
+		switch ( $destination ) {
+			case 'media':
+				return wp_get_attachment_image_url( $image_id, 'full' );
+			case 'attachment':
+				return get_attachment_link( $image_id );
+			case 'custom':
+				return $attr['href'] ?? '';
+			case 'field':
+				return $this->resolve_field_url( $attr, $block );
+			default:
+				return '';
+		}
+	}
+
+	/**
+	 * Resolve a URL from another ACF field selected as the link source.
+	 *
+	 * NOTE: this mirrors the field-type URL resolution in
+	 * inc/blocks/class-acf-button.php; a candidate for a shared Helper method.
+	 *
+	 * @param array    $attr  Block attributes.
+	 * @param WP_Block $block Block instance.
+	 * @return string         Resolved URL, or empty string.
+	 */
+	private function resolve_field_url( $attr, $block ) {
+		if ( empty( $attr['linkFieldKey'] ) ) {
+			return '';
+		}
+
+		$link_attr             = $attr;
+		$link_attr['fieldKey'] = $attr['linkFieldKey'];
+		$link_field            = Fields::load_field( $link_attr, $block );
+
+		if ( false === $link_field || empty( $link_field['value'] ) ) {
+			return '';
+		}
+
+		$value = $link_field['value'];
+
+		if ( 'email' === $link_field['type'] ) {
+			return 'mailto:' . $value;
+		} elseif ( 'image' === $link_field['type'] || 'file' === $link_field['type'] ) {
+			return wp_get_attachment_url( $value );
+		} elseif ( 'link' === $link_field['type'] && isset( $value['url'] ) ) {
+			return $value['url'];
+		} elseif ( 'page_link' === $link_field['type'] ) {
+			return is_numeric( $value ) ? get_permalink( $value ) : $value;
+		}
+
+		return $value;
 	}
 
 	public function get_overlay_element_markup( $attributes ) {

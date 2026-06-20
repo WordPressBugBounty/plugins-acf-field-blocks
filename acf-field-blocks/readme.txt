@@ -3,7 +3,7 @@ Contributors: gamaup
 Tags: acf, block, meta field, meta field block, acf block
 Requires at least: 6.5
 Tested up to: 7.0
-Stable Tag: 1.6.0
+Stable Tag: 1.6.1
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ Just create your custom fields with the ACF or SCF plugin, then open the WordPre
 
 Want to see it in action? Watch the short demo video below to learn how it works in real time.
 
-[youtube https://www.youtube.com/watch?v=0gjUTgNgn7A]
+[youtube https://www.youtube.com/watch?v=lTDoTBOz9Vw]
 
 = Features =
 * **No Code Needed** – Display your ACF & SCF fields directly in the editor without building a custom block.
@@ -132,6 +132,12 @@ Yes, of course.
 3. Field Settings
 
 == Changelog ==
+
+= 1.6.1 =
+*Jun 20th, 2026*
+
+* **UPDATE:** ACF Image block now supports linking the image — link to the media file, attachment page, a custom URL, or a URL pulled from another field, with "open in new tab" and "nofollow" options
+* **FIX:** Date Picker, Date Time Picker, and Time Picker fields now render using the field's configured return format in both the editor and on the frontend
 
 = 1.6.0 =
 *Jun 2nd, 2026*

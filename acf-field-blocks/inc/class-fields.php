@@ -322,8 +322,17 @@ class Fields {
 			} elseif ( ! empty( $raw_value ) && is_numeric( $raw_value ) ) {
 				return get_permalink( $raw_value );
 			}
-		} elseif ( in_array( $field['type'], [ 'date_picker','datetime_picker','time_picker' ] ) && ! empty( $raw_value ) ) {
-			return gmdate( $field['return_format'], strtotime( $raw_value ) );
+		} elseif ( in_array( $field['type'], [ 'date_picker','date_time_picker','time_picker' ] ) && ! empty( $raw_value ) ) {
+			// A missing return_format means the value was already formatted by an
+			// earlier pass (e.g. the PRO flatten filter formats values before the
+			// values endpoint runs this again). Return it untouched to avoid
+			// double-formatting, which would otherwise blank the value out.
+			if ( empty( $field['return_format'] ) ) {
+				return $raw_value;
+			}
+			// Match ACF's own output: acf_format_date() formats the raw stored
+			// value with the field's return_format (localized, timezone-aware).
+			return acf_format_date( $raw_value, $field['return_format'] );
 		} elseif ( 'user' === $field['type'] ) {
 			if ( is_array( $raw_value ) ) {
 				return array_map( function( $val ) {

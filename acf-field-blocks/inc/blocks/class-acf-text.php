@@ -212,9 +212,11 @@ class ACF_Text {
 				break;
 
 			case 'date_picker':
-			case 'datetime_picker':
+			case 'date_time_picker':
 			case 'time_picker':
-				$value = gmdate( $field['return_format'], strtotime( $field['value'] ) );
+				// Match ACF's own output: acf_format_date() formats the raw stored
+				// value with the field's return_format (localized, timezone-aware).
+				$value = acf_format_date( $field['value'], $field['return_format'] );
 				break;
 
 			case 'google_map':
