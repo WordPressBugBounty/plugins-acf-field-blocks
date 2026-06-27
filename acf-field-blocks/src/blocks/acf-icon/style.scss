@@ -1,0 +1,33 @@
+.wp-block-acf-field-blocks-acf-icon {
+	margin-left: 0;
+	margin-right: 0;
+	line-height: 1;
+
+	.afb-icon-wrapper {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+	}
+
+	.dashicons {
+		display: inline-block;
+		line-height: 1;
+	}
+
+	img {
+		display: block;
+		object-fit: contain;
+	}
+
+	// Alignment
+	&:where(.alignleft, .alignright) {
+		width: 100%;
+	}
+
+	&:where(.aligncenter) {
+		margin-left: auto;
+		margin-right: auto;
+		text-align: center;
+	}
+}

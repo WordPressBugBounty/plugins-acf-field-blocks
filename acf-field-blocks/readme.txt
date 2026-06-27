@@ -3,7 +3,7 @@ Contributors: gamaup
 Tags: acf, block, meta field, meta field block, acf block
 Requires at least: 6.5
 Tested up to: 7.0
-Stable Tag: 1.6.1
+Stable Tag: 1.6.3
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -132,6 +132,16 @@ Yes, of course.
 3. Field Settings
 
 == Changelog ==
+
+= 1.6.3 =
+*Jun 27th, 2026*
+
+* **SECURITY:** Added an object-level authorization check to the field values REST endpoint, preventing Author-level users from reading ACF values of posts they can't access, such as private posts and drafts (CVE-2026-12428, reported by Wordfence)
+
+= 1.6.2 =
+*Jun 24th, 2026*
+
+* [PRO Only] **FIX:** Fixed an editor freeze (infinite render loop) when using the Single Post / Post Loop display inside a Site Editor template with a Cover block set to use the post's featured image
 
 = 1.6.1 =
 *Jun 20th, 2026*

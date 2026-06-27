@@ -1,12 +1,12 @@
 <?php
 /**
- * Plugin Name:       Blocks for ACF Fields
+ * Plugin Name:       Blocks for ACF Fields — Display Custom Fields in the Block Editor
  * Plugin URI:        https://www.acffieldblocks.com
  * Description:       The easiest way to display ACF fields in the WordPress block editor — no coding required!
  * Requires at least: 6.5
  * Tested up to:      7.0
  * Requires PHP:      7.4
- * Version:           1.6.1
+ * Version:           1.6.3
  * Author:            gamaup
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -76,7 +76,7 @@ if ( ! class_exists( 'ACF_Field_Blocks' ) ) {
 		 * Define all constants
 		 */
 		public function define_constants() {
-			define( 'ACF_FIELD_BLOCKS_VERSION', '1.6.1' );
+			define( 'ACF_FIELD_BLOCKS_VERSION', '1.6.3' );
 			define( 'ACF_FIELD_BLOCKS_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 			define( 'ACF_FIELD_BLOCKS_URL', plugins_url( basename( plugin_dir_path( __FILE__ ) ), basename( __FILE__ ) ) );
 		}
@@ -122,11 +122,12 @@ if ( ! class_exists( 'ACF_Field_Blocks' ) ) {
 			if ( ! empty( $activation_date ) && time() > ( intval( $activation_date ) + ( 2 * WEEK_IN_SECONDS ) ) && false === $is_hide ) {
 				?>
 				<div class="notice notice-info is-dismissible">
+					<?php /* translators: %s: Plugin name. */ ?>
 					<p style="margin-bottom: 0;"><?php printf( esc_html__( "Enjoying %s? You've been using this plugin for a while.", "acf-field-blocks" ), "<strong>Blocks for ACF Fields</strong>" ); ?></p>
 					<p style="margin-top: 0;"><?php esc_html_e( 'If you could take a few moments to rate it on WordPress.org, we would really appreciate your help making the plugin better. Thanks!', 'acf-field-blocks' ); ?></p>
 					<div style="margin-bottom: 1em;">
 						<a target="_blank" href="https://wordpress.org/support/plugin/acf-field-blocks/reviews/#new-post" class="button-primary"><?php esc_html_e( 'Drop a Review', 'acf-field-blocks' ); ?></a>
-						<a href="<?php echo wp_nonce_url( admin_url(), 'hide_review_notice', 'afb_action' ) ?>" class="button-secondary"><?php esc_html_e( "Don't show again", 'acf-field-blocks' ); ?></a>
+						<a href="<?php echo esc_url( wp_nonce_url( admin_url(), 'hide_review_notice', 'afb_action' ) ); ?>" class="button-secondary"><?php esc_html_e( "Don't show again", 'acf-field-blocks' ); ?></a>
 					</div>
 				</div>
 				<?php
@@ -208,9 +209,9 @@ if ( ! class_exists( 'ACF_Field_Blocks' ) ) {
 				return;
 			}
 
-			$message = __( "Blocks for ACF Fields and Blocks for ACF Fields PRO should not be active at the same time. We've automatically deactivated Blocks for ACF Fields.", 'acf' );
+			$message = __( "Blocks for ACF Fields and Blocks for ACF Fields PRO should not be active at the same time. We've automatically deactivated Blocks for ACF Fields.", 'acf-field-blocks' );
 			if ( 2 === $deactivated_notice_id ) {
-				$message = __( "Blocks for ACF Fields and Blocks for ACF Fields PRO should not be active at the same time. We've automatically deactivated Blocks for ACF Fields PRO.", 'acf' );
+				$message = __( "Blocks for ACF Fields and Blocks for ACF Fields PRO should not be active at the same time. We've automatically deactivated Blocks for ACF Fields PRO.", 'acf-field-blocks' );
 			}
 
 			?>

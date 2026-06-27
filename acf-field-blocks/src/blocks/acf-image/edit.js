@@ -28,7 +28,10 @@ import {
 	PanelBody,
 	Spinner,
 	Placeholder,
-	MenuItem
+	MenuItem,
+	SelectControl,
+	ToggleControl,
+	TextControl
 } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
 
@@ -41,6 +44,7 @@ import {
 	FieldSettings,
 	FieldPlaceholder,
 	FieldSummary,
+	FieldKeyControl,
 	DimensionControls
 } from '../../components'
 import {
@@ -65,7 +69,12 @@ export default function Edit( {
 		aspectRatio,
 		scale,
 		sizeSlug,
-		defaultImage
+		defaultImage,
+		linkDestination,
+		href,
+		linkFieldKey,
+		linkTarget,
+		rel
 	},
 	attributes,
 	setAttributes,
@@ -138,6 +147,12 @@ export default function Edit( {
 	});
 	const borderProps = useBorderProps( attributes );
 	// const shadowProps = getShadowClassesAndStyles( attributes );
+
+	const isLinked = [ 'media', 'attachment', 'custom', 'field' ].includes( linkDestination );
+	const disabledClickProps = {
+		onClick: ( event ) => event.preventDefault(),
+		'aria-disabled': true,
+	};
 
 	const imageStyles = {
 		...borderProps.style,
@@ -299,6 +314,66 @@ export default function Edit( {
 						</MediaReplaceFlow>
 					</BaseControl>
 				</PanelBody>
+
+				<PanelBody
+					title={ __( 'Link Settings', 'acf-field-blocks' ) }
+					initialOpen={ false }
+				>
+					<SelectControl
+						label={ __( 'On Click', 'acf-field-blocks' ) }
+						value={ linkDestination || 'none' }
+						options={ [
+							{ value: 'none', label: __( 'Do nothing', 'acf-field-blocks' ) },
+							{ value: 'lightbox', label: __( 'Open in lightbox', 'acf-field-blocks' ) },
+							{ value: 'media', label: __( 'Link to media file', 'acf-field-blocks' ) },
+							{ value: 'attachment', label: __( 'Link to attachment page', 'acf-field-blocks' ) },
+							{ value: 'custom', label: __( 'Link to custom URL', 'acf-field-blocks' ) },
+							{ value: 'field', label: __( 'Link to URL from field', 'acf-field-blocks' ) },
+						] }
+						onChange={ value => setAttributes( { linkDestination: value } ) }
+						__nextHasNoMarginBottom={ true }
+						__next40pxDefaultSize={ true }
+					/>
+					{ 'custom' === linkDestination && (
+						<TextControl
+							label={ __( 'Custom URL', 'acf-field-blocks' ) }
+							value={ href || '' }
+							type="url"
+							placeholder="https://"
+							onChange={ value => setAttributes( { href: value } ) }
+							__nextHasNoMarginBottom={ true }
+							__next40pxDefaultSize={ true }
+						/>
+					) }
+					{ 'field' === linkDestination && (
+						<FieldKeyControl
+							label={ __( 'Link Field', 'acf-field-blocks' ) }
+							filterBy={ { return: 'link' } }
+							source={ fieldSource }
+							sourceMeta={ fieldSourceMeta }
+							value={ linkFieldKey }
+							onChange={ value => setAttributes( { linkFieldKey: value } ) }
+							context={ context }
+							help={ __( 'Use a URL from another field as the link.', 'acf-field-blocks' ) }
+						/>
+					) }
+					{ isLinked && (
+						<>
+							<ToggleControl
+								__nextHasNoMarginBottom
+								label={ __( 'Open in new tab', 'acf-field-blocks' ) }
+								checked={ '_blank' === linkTarget }
+								onChange={ value => setAttributes( { linkTarget: value ? '_blank' : undefined } ) }
+							/>
+							<ToggleControl
+								__nextHasNoMarginBottom
+								label={ __( 'Mark as nofollow', 'acf-field-blocks' ) }
+								checked={ !! rel && rel.includes( 'nofollow' ) }
+								onChange={ value => setAttributes( { rel: value ? 'nofollow' : undefined } ) }
+							/>
+						</>
+					) }
+				</PanelBody>
 			</InspectorControls>
 			<InspectorControls group="color">
 				<OverlayControls
@@ -366,7 +441,9 @@ export default function Edit( {
 		<>
 			{ ! temporaryURL && controls }
 			<figure { ...blockProps }>
-				{ image }
+				{ isLinked ? (
+					<a href="#" { ...disabledClickProps }>{ image }</a>
+				) : image }
 				<Overlay
 					attributes={ attributes }
 					setAttributes={ setAttributes }

@@ -1,0 +1,53 @@
+.acf-field-blocks-field-summary {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+
+	&__list {
+		margin: 0;
+		display: grid;
+		grid-template-columns: 56px 1fr;
+		row-gap: 6px;
+		column-gap: 10px;
+		align-items: baseline;
+	}
+
+	&__label {
+		margin: 0;
+		font-size: 10px;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		opacity: 0.55;
+		line-height: 1.4;
+	}
+
+	&__value {
+		margin: 0;
+		font-size: 13px;
+		font-weight: 500;
+		line-height: 1.3;
+		word-break: break-word;
+		display: flex;
+		flex-direction: column;
+		gap: 1px;
+	}
+
+	&__detail {
+		font-size: 11px;
+		font-weight: 400;
+		opacity: 0.65;
+		line-height: 1.3;
+	}
+
+	&__none {
+		font-style: italic;
+		font-weight: 400;
+		opacity: 0.6;
+	}
+
+	> .components-button {
+		align-self: flex-start;
+		margin-top: 12px;
+	}
+}

@@ -66,9 +66,10 @@ class ACF_Embed {
 
 		ob_start();
 		echo '<div ' . wp_kses_post( $wrapper_attributes ) . '>';
-    echo '<div class="wp-block-acf-field-blocks-acf-embed__wrapper">';
-    echo $value;
-    echo '</div>';
+		echo '<div class="wp-block-acf-field-blocks-acf-embed__wrapper">';
+		// oEmbed markup returned by wp_oembed_get() comes from WordPress' trusted provider allowlist.
+		echo $value; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '</div>';
 		echo '</div>';
 		$output = ob_get_clean();
 

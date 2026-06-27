@@ -123,11 +123,12 @@ class Fields {
 	 */
 	public static function resolve_url_param_source( $param_name, $meta = array() ) {
 		$param_name = sanitize_key( $param_name );
-		if ( '' === $param_name || ! isset( $_GET[ $param_name ] ) ) {
+		// Read-only public URL-parameter lookup; no form is processed, so a nonce does not apply.
+		if ( '' === $param_name || ! isset( $_GET[ $param_name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return false;
 		}
 
-		$value = sanitize_text_field( wp_unslash( $_GET[ $param_name ] ) );
+		$value = sanitize_text_field( wp_unslash( $_GET[ $param_name ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( '' === $value ) {
 			return false;
 		}

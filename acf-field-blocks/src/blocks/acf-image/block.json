@@ -45,6 +45,25 @@
 		"defaultImage": {
 			"type": "number"
 		},
+		"linkDestination": {
+			"type": "string",
+			"default": "none"
+		},
+		"href": {
+			"type": "string"
+		},
+		"linkFieldKey": {
+			"type": "string"
+		},
+		"linkTarget": {
+			"type": "string"
+		},
+		"rel": {
+			"type": "string"
+		},
+		"linkClass": {
+			"type": "string"
+		},
 		"overlayColor": {
 			"type": "string"
 		},

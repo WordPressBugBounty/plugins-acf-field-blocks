@@ -299,6 +299,15 @@ class Rest {
 			return [];
 		}
 
+		// The id can point at any object, so check object-level access before reading.
+		if ( ! $this->current_user_can_read_object( $post_id ) ) {
+			return new \WP_Error(
+				'rest_forbidden',
+				__( 'You are not allowed to read the field values of this object.', 'acf-field-blocks' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
+
 		$fields = get_field_objects( $post_id, false, true, false );
 		$values = array();
 
@@ -312,6 +321,59 @@ class Rest {
 		}
 
 		return apply_filters( 'acf_field_blocks_rest_values', $values );
+	}
+
+	/**
+	 * Check whether the current user may read the ACF values of the given object id.
+	 *
+	 * @since  1.6.3
+	 *
+	 * @param  int|string $post_id ACF object id.
+	 * @return bool                True if the current user may read the object.
+	 */
+	private function current_user_can_read_object( $post_id ) {
+		// Decode the id the same way ACF does, so the check matches what gets read.
+		if ( function_exists( 'acf_decode_post_id' ) ) {
+			$decoded = acf_decode_post_id( $post_id );
+			$type    = $decoded['type'];
+			$id      = $decoded['id'];
+		} elseif ( is_numeric( $post_id ) ) {
+			$type = 'post';
+			$id   = $post_id;
+		} else {
+			return false;
+		}
+
+		switch ( $type ) {
+			case 'post':
+				$id = (int) $id;
+				return $id && current_user_can( 'read_post', $id );
+
+			case 'user':
+				// Allow your own profile; otherwise require edit access to the user.
+				$id = (int) $id;
+				return $id && ( get_current_user_id() === $id || current_user_can( 'edit_user', $id ) );
+
+			case 'comment':
+				$id      = (int) $id;
+				$comment = $id ? get_comment( $id ) : null;
+				return $comment && ( current_user_can( 'moderate_comments' )
+					|| current_user_can( 'read_post', (int) $comment->comment_post_ID ) );
+
+			case 'term':
+				// Terms are public taxonomy data; just confirm it exists.
+				$id = (int) $id;
+				return $id > 0 && term_exists( $id ) !== null;
+
+			case 'option':
+			case 'block':
+				// Shared store, not a per-object resource. Already gated by publish_posts.
+				return true;
+
+			default:
+				// Unknown/sensitive types (blog, woo_order, ...).
+				return current_user_can( 'manage_options' );
+		}
 	}
 
 }
