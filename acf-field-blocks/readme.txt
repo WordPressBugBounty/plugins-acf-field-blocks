@@ -3,7 +3,7 @@ Contributors: gamaup
 Tags: acf, block, meta field, meta field block, acf block
 Requires at least: 6.5
 Tested up to: 7.0
-Stable Tag: 1.6.3
+Stable Tag: 1.6.5
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -132,6 +132,16 @@ Yes, of course.
 3. Field Settings
 
 == Changelog ==
+
+= 1.6.5 =
+*Aug 25th, 2026*
+
+* **FIX:** Fixed ACF Embed block displaying at a small, fixed size (e.g. 500x281) on the frontend instead of scaling responsively — the responsive aspect-ratio sizing is now calculated on the server from the actual embed instead of relying on the block editor's preview, and no longer requires the active theme to declare support for "responsive-embeds"
+
+= 1.6.4 =
+*Aug 15th, 2026*
+
+* [PRO Only] **FIX:** Fixed Gallery block images stretching to the wrong height on the frontend when the layout is Grid or Carousel and the aspect ratio is set to "Original" — lazy loaded images past the first row now keep their original proportions
 
 = 1.6.3 =
 *Jun 27th, 2026*
