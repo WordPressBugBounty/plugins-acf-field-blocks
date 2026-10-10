@@ -3,7 +3,7 @@ Contributors: gamaup
 Tags: acf, block, meta field, meta field block, acf block
 Requires at least: 6.5
 Tested up to: 7.0
-Stable Tag: 1.6.5
+Stable Tag: 1.6.6
 Requires PHP: 7.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -132,6 +132,15 @@ Yes, of course.
 3. Field Settings
 
 == Changelog ==
+
+= 1.6.6 =
+*Oct 10th, 2026*
+
+* **FIX:** Prefix and suffix are no longer rendered on the frontend for True/False and WYSIWYG fields, matching the editor preview
+* **FIX:** The plugin now correctly requires WordPress 6.5 or later
+* **SECURITY:** The empty message is now sanitized before it is displayed
+* [PRO Only] **FIX:** The "Value matches pattern" visibility rule now works with patterns containing a slash and no longer shows errors for invalid patterns
+* [PRO Only] **SECURITY:** Tightened permission checks on the post, term, and user search in the editor
 
 = 1.6.5 =
 *Aug 25th, 2026*

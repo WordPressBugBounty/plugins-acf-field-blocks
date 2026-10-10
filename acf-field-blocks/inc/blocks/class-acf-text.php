@@ -54,7 +54,7 @@ class ACF_Text {
 		// throw if value is empty.
 		if ( ( '' === $field['value'] || is_null( $field['value'] ) || ( is_array( $field['value'] ) && empty( $field['value'] ) ) || false === $field['value'] ) && 'true_false' !== $field['type'] ) {
 			if ( isset( $attr['showMessageIfEmpty'] ) && boolval( $attr['showMessageIfEmpty'] ) && isset( $attr['emptyMessage'] ) && ! empty( $attr['emptyMessage'] ) ) {
-				return $opening_tag . '<span class="empty">' . $attr['emptyMessage'] . '</span>' . $closing_tag;
+				return $opening_tag . '<span class="empty">' . wp_kses_post( $attr['emptyMessage'] ) . '</span>' . $closing_tag;
 			} else {
 				return '';
 			}
@@ -285,8 +285,8 @@ class ACF_Text {
 			return '';
 		}
 
-		$prefix = ( 'true_false' !== $field['type'] || 'wysiwyg' !== $field['type'] ) && isset( $attr['prefix'] ) && ! empty( $attr['prefix'] ) ? $attr['prefix'] : '';
-		$suffix = ( 'true_false' !== $field['type'] || 'wysiwyg' !== $field['type'] ) && isset( $attr['suffix'] ) && ! empty( $attr['suffix'] ) ? $attr['suffix'] : '';
+		$prefix = 'true_false' !== $field['type'] && 'wysiwyg' !== $field['type'] && ! empty( $attr['prefix'] ) ? $attr['prefix'] : '';
+		$suffix = 'true_false' !== $field['type'] && 'wysiwyg' !== $field['type'] && ! empty( $attr['suffix'] ) ? $attr['suffix'] : '';
 
 		ob_start();
 		echo '<' . esc_html( $tag ) . ' ' . wp_kses_post( $wrapper_attributes ) . '>';

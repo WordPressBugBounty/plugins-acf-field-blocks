@@ -62,7 +62,7 @@ class ACF_Embed {
 				$empty_wrapper_attributes = get_block_wrapper_attributes([
 					'class' => Helper::build_class([ 'field-' . $field['name'] ])
 				]);
-				return "<div {$empty_wrapper_attributes}><span class=\"empty\">{$attr['emptyMessage']}</span></div>";
+				return "<div {$empty_wrapper_attributes}><span class=\"empty\">" . wp_kses_post( $attr['emptyMessage'] ) . "</span></div>";
 			} else {
 				return '';
 			}

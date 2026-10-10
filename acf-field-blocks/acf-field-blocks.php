@@ -6,7 +6,7 @@
  * Requires at least: 6.5
  * Tested up to:      7.1
  * Requires PHP:      7.4
- * Version:           1.6.5
+ * Version:           1.6.6
  * Author:            gamaup
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -50,7 +50,7 @@ if ( ! class_exists( 'ACF_Field_Blocks' ) ) {
 		 * Constructor
 		 */
 		public function __construct() {
-			if ( ! version_compare( get_bloginfo( 'version' ), '6.3', '>=' ) ) {
+			if ( ! version_compare( get_bloginfo( 'version' ), '6.5', '>=' ) ) {
 				add_action( 'admin_notices', [ $this, 'fail_wp_version' ] );
 				return;
 			}
@@ -76,7 +76,7 @@ if ( ! class_exists( 'ACF_Field_Blocks' ) ) {
 		 * Define all constants
 		 */
 		public function define_constants() {
-			define( 'ACF_FIELD_BLOCKS_VERSION', '1.6.5' );
+			define( 'ACF_FIELD_BLOCKS_VERSION', '1.6.6' );
 			define( 'ACF_FIELD_BLOCKS_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 			define( 'ACF_FIELD_BLOCKS_URL', plugins_url( basename( plugin_dir_path( __FILE__ ) ), basename( __FILE__ ) ) );
 		}
